@@ -70,7 +70,7 @@ int suivreLigne(void)
             }
             Serial.println(i0);
             Serial.println(i1);
-            // Avance(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
+            //Avance(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
         }
 
         if(detectCouleur() != -1)
