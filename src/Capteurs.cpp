@@ -120,9 +120,9 @@ int lireCapteurs(int capteur)
   }
   else if (capteur == 1)
   {
-    valeurGauche = analogRead(CAPTEUR0_GAUCHE);
-    valeurCentre = analogRead(CAPTEUR0_CENTRE);
-    valeurDroite = analogRead(CAPTEUR0_DROITE);
+    valeurGauche = analogRead(CAPTEUR1_GAUCHE);
+    valeurCentre = analogRead(CAPTEUR1_CENTRE);
+    valeurDroite = analogRead(CAPTEUR1_DROITE);
   }
 
   resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
@@ -217,5 +217,33 @@ void eteindreToutesLesDELs(void)
   digitalWrite(LED_BLEUE, LOW);
 }
 
+/**
+ * Vérifie la détection d'un mur
+ * 
+ * @return (bool) vrai si il y a un mur
+ */
+bool mur()
+{
+  if(digitalRead(PIN_DIST_D) == LOW && digitalRead(PIN_DIST_G) == LOW){
+    return true;
+  }
+  else return false;
+}
 
+/**
+ * Vérifie le bruit à 5kHz
+ * 
+ * @return (bool) vrai si il y a un bruit a 5kHz
+ */
+bool sifflet_5kHz()
+{
+  //TODO verifier le fonctionnement avec le pourcentage d'écart
+  float ratio = analogRead(BRUIT_AMBIENT)/analogRead(SIGNAL_5kHz)*100;
+
+  if(ratio > 10){//ecart est a vérifier dans différent contexte de bruit
+    return true;
+  }
+  else{ return false;}
+  
+}
  
