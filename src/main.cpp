@@ -19,7 +19,7 @@ Fonctions d'initialisation (setup)
 // -> Se fait appeler seulement un fois
 // -> Generalement on y initilise les varibbles globales
 
-void setup() //branch
+void setup() 
 {
   BoardInit();
   pinMode(LED_ROUGE, OUTPUT);
