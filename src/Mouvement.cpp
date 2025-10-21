@@ -1,6 +1,8 @@
 #include "Mouvement.h"
 
-/**
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
  * Convertie la distance donné en cm en distance donné en nombre de tick d'encodeur
  *
  * Utilise les définitions:
@@ -12,14 +14,16 @@
  * @param distanceCM (float) distance en centimètre
  *
  * @return (integer 32 bits non-signé) distance en tick d'encodeur
- */
+ ******************************************************************************************/
 uint32_t distanceEnco(float distanceCM)
 {
     uint32_t val = (TOUR_COMPLET / CIRCON_ROUE_CM) * distanceCM;
     return val;
 }
 
-/**
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
  * Convertie l'angle de rotation donné en degré en nombre de tick d'encodeur
  *
  * Utilise les définitions:
@@ -30,7 +34,7 @@ uint32_t distanceEnco(float distanceCM)
  *
  * @param angleDEG (integer) angle de rotation en degré
  * @return (integer 32 bits non-signé) rotation en tick d'encodeur
- */
+ ******************************************************************************************/
 uint32_t angleEnco(int angleDeg)
 {
     float rad = radians(angleDeg);
@@ -38,8 +42,11 @@ uint32_t angleEnco(int angleDeg)
     return round((TOUR_COMPLET * deplacementCM) / CIRCON_ROUE_CM);
 }
 
-/**
- * Calcul la vitesse de déplacement en fonction de la distance restante au déplacement selon une courbe sigmoide
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Calcul la vitesse de déplacement en fonction de la distance restante au déplacement selon
+ * une courbe sigmoide
  *
  * Augmente la vitesse pendant le premier quart du déplacement
  *
@@ -52,7 +59,7 @@ uint32_t angleEnco(int angleDeg)
  * @param positionFinal (integer 32 bit non-signé) position final souhaité en tick d'encodeur
  *
  * @return (double) facteur de multiplication de la vitesse [0.2 à 1]
- */
+ ******************************************************************************************/
 double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
 {
     double vit;
@@ -90,7 +97,9 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
     }
 }
 
-/**
+/*******************************************************************************************
+ * Auteur : Antoine 
+ * 
  * Controleur Proportionel Intégral Différentiel
  *
  * Réduit l'erreur entre la valeur de consigne et la valeur réel
@@ -103,7 +112,7 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
  *
  * @return (double) terme de correction à additionner à la vitesse du robot
  *
- */
+ ******************************************************************************************/
 double pid(float error, float &lastError)
 {
     static float integral;
@@ -121,8 +130,10 @@ double pid(float error, float &lastError)
     return out;
 }
 
-/**
- * Controle la vitesse des deux moteur tout en corrigeant le moteur droit
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Description : Controle la vitesse des deux moteur tout en corrigeant le moteur droit
  *
  * @param vitesse (float [0 à 1]) vitesse des moteur
  *
@@ -130,7 +141,7 @@ double pid(float error, float &lastError)
  *
  * @param &correction (float) correction à apporter a la roue droite
  *
- */
+ ******************************************************************************************/
 void robotSetSpeed(float vitesse, int direction, float &correction)
 {
 
@@ -164,12 +175,3 @@ void robotSetSpeed(float vitesse, int direction, float &correction)
     correction = correction + pid(error, previousError);
 }
 
-/**
- * Inverse l'état d'une DEL
- *
- * @param pin (integer) broche de la DEL à inverser
- */
-void inverseDEL(int pin)
-{
-    digitalWrite(pin, !digitalRead(pin)); // Inverse l'etat de la pin
-}

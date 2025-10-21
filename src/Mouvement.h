@@ -25,7 +25,6 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal);
 double pid(float error, float &lastError);
 bool mur();
 void robotSetSpeed(float vitesse, int direction ,float &correction);
-void inverseDEL(int pin);
 
 #endif 
 

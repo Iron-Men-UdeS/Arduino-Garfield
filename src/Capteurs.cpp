@@ -1,93 +1,102 @@
 
 #include "Capteurs.h"
 
-//Variables
+// Variables
 
-//Suiveur de ligne
+// Suiveur de ligne
 int seuilGauche = 800;
 int seuilCentre = 800;
 int seuilDroite = 800;
 
-//Capteur de couleur
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); //Définit capteur et caractéristiques d'utilisation
+// Capteur de couleur
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : calibrerGauche                                                          
-// Auteur : Amine                                                                         
-// Entree(s) : N/A
-// Sortie : seuil
-// Description : Determine la valeur seuil du capteur de gauche
-//////////////////////////////////////////////////////////////////////////////////////
-int calibrerGauche(void) 
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * Determine la valeur seuil du capteur de gauche
+ * 
+ * @return seuil (integer) millieu entre le blanc et le noir
+ ******************************************************************************************/
+int calibrerGauche(void)
 {
   Serial.println("Place le capteur GAUCHE sur BLANC");
   delay(2000);
   int blanc = analogRead(CAPTEUR0_GAUCHE);
-  Serial.print("Valeur blanc = "); Serial.println(blanc);
+  Serial.print("Valeur blanc = ");
+  Serial.println(blanc);
 
   Serial.println("Place le capteur GAUCHE sur NOIR");
   delay(2000);
   int noir = analogRead(CAPTEUR0_GAUCHE);
-  Serial.print("Valeur noir = "); Serial.println(noir);
+  Serial.print("Valeur noir = ");
+  Serial.println(noir);
 
   int seuil = (blanc + noir) / 2;
-  Serial.print("Seuil gauche = "); Serial.println(seuil);
+  Serial.print("Seuil gauche = ");
+  Serial.println(seuil);
   return seuil;
 }
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : calibreCentre                                                          
-// Auteur : Amine                                                                         
-// Entree(s) : N/A
-// Sortie : seuil
-// Description : Determine la valeur seuil du capteur du centre
-//////////////////////////////////////////////////////////////////////////////////////
-int calibreCentre(void) 
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * Determine la valeur seuil du capteur du centre
+ * 
+ * @return seuil (integer) millieu entre le blanc et le noir
+ ******************************************************************************************/
+int calibreCentre(void)
 {
   Serial.println("Place le capteur CENTRE sur BLANC");
   delay(2000);
   int blanc = analogRead(CAPTEUR0_CENTRE);
-  Serial.print("Valeur blanc = "); Serial.println(blanc);
+  Serial.print("Valeur blanc = ");
+  Serial.println(blanc);
 
   Serial.println("Place le capteur CENTRE sur NOIR");
   delay(2000);
   int noir = analogRead(CAPTEUR0_CENTRE);
-  Serial.print("Valeur noir = "); Serial.println(noir);
+  Serial.print("Valeur noir = ");
+  Serial.println(noir);
 
   int seuil = (blanc + noir) / 2;
-  Serial.print("Seuil centre = "); Serial.println(seuil);
+  Serial.print("Seuil centre = ");
+  Serial.println(seuil);
   return seuil;
 }
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : calibrationDroite                                                          
-// Auteur : Amine                                                                         
-// Entree(s) : N/A
-// Sortie : seuil
-// Description : Determine la valeur seuil du capteur de droite
-//////////////////////////////////////////////////////////////////////////////////////
-int calibrationDroite(void) 
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * Determine la valeur seuil du capteur de droite
+ * 
+ * @return seuil (integer) millieu entre le blanc et le noir
+ ******************************************************************************************/
+int calibrationDroite(void)
 {
   Serial.println("Place le capteur DROITE sur BLANC");
   delay(2000);
   int blanc = analogRead(CAPTEUR0_DROITE);
-  Serial.print("Valeur blanc = "); Serial.println(blanc);
+  Serial.print("Valeur blanc = ");
+  Serial.println(blanc);
 
   Serial.println("Place le capteur DROITE sur NOIR");
   delay(2000);
   int noir = analogRead(CAPTEUR0_DROITE);
-  Serial.print("Valeur noir = "); Serial.println(noir);
+  Serial.print("Valeur noir = ");
+  Serial.println(noir);
 
   int seuil = (blanc + noir) / 2; // parenthèses corrigées
-  Serial.print("Seuil droite = "); Serial.println(seuil);
+  Serial.print("Seuil droite = ");
+  Serial.println(seuil);
   return seuil;
 }
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : calibrationTotale                                                          
-// Auteur : Amine                                                                         
-// Entree(s) : N/A
-// Sortie : N/A
-// Description : Calibre les 3 capteurs et stocke les seuils dans des variables
-//////////////////////////////////////////////////////////////////////////////////////
-void calibrationTotale(void) 
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * Stocke les seuils des trois capteurs dans des variables
+ * 
+ * @return seuil (integer) millieu entre le blanc et le noir
+ ******************************************************************************************/
+void calibrationTotale(void)
 {
   seuilGauche = calibrerGauche();
   delay(2500);
@@ -97,14 +106,15 @@ void calibrationTotale(void)
   delay(2500);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : lireCapteurs                                                          
-// Auteur : Amine                                                                         
-// Entree(s) : int resultat[3] 
-// Sortie : N/A
-// Description : Lit les trois capteurs et indique si le capteur voit une ligne (1) ou
-//               non dans un tableau
-//////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * lit le capteur de contraste pour detecter une ligne
+ * 
+ * @param capteur (integer) l'id du capteur que l'on souhaite lire
+ * 
+ * @return resultat (integer) ou la ligne est appercu (0, pas de ligne, 1 ligne) en binaire
+ ******************************************************************************************/
 int lireCapteurs(int capteur)
 {
   int valeurGauche = 0;
@@ -128,34 +138,30 @@ int lireCapteurs(int capteur)
   resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
   resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
   resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
-  
+
   return resultat;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : initCapteurCouleur                                                          
-// Auteur : Rapahel                                                                         
-// Entree(s) : N/A
-// Sortie : N/A
-// Description : Initialise le capteur de couleur
-//////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ * Auteur : Rapahel
+ * 
+ * Initialise le capteur de couleur
+ ******************************************************************************************/
 void initCapteurCouleur(void)
 {
   Wire.begin();
-  if (tcs.begin())  //S'assure que le capteur est detecte
-  {        
+  if (tcs.begin()) // S'assure que le capteur est detecte
+  {
     tcs.setInterrupt(false);
     delay(100);
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : detectCouleur                                                          
-// Auteur : Rapahel                                                                         
-// Entree(s) : N/A
-// Sortie : N/A
-// Description : Initialise le capteur de couleur
-//////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ * Auteur : Rapahel
+ * 
+ * Initialise le capteur de couleur
+ ******************************************************************************************/
 int detectCouleur(void)
 {
   uint16_t r, g, b, c;            // Definit les variables r,g,b et c en 16 bits valeurs positives, comme ce que le capteur renvoie
@@ -164,13 +170,13 @@ int detectCouleur(void)
   if (total == 0)
   {
     total = 1;
-  }                               // Afin d'eviter les divisions par 0
+  } // Afin d'eviter les divisions par 0
   float rouge = (float)r / total; // variable rouge est la proportion de la couleur
   float vert = (float)g / total;  // la meme avec vert, le float entre parenthèses sert à faire en sorte que la division ne soit pas entière
   float bleu = (float)b / total;  // la meme avec bleu
   if (rouge > bleu * 1.3 && rouge > vert * 1.3)
-  {                               // Verifie si rouge est dominant sur les autres couleurs par un coefficient de 1.3
-    return couleurRouge;          // Renvoie 0
+  {                      // Verifie si rouge est dominant sur les autres couleurs par un coefficient de 1.3
+    return couleurRouge; // Renvoie 0
   }
   else if (bleu > rouge * 1.3 && bleu > vert * 1.3)
   {
@@ -181,35 +187,33 @@ int detectCouleur(void)
     return couleurVert;
   }
   else if ((rouge + vert) / 2 > bleu * 1.2)
-  {                               // Pour le jaune, la moitié de rouge et vert combiné avec un plus petit coefficient
+  { // Pour le jaune, la moitié de rouge et vert combiné avec un plus petit coefficient
     return couleurJaune;
   }
   else
   {
-    return -1;                   // Si aucune couleur dominante, retourne -1
+    return -1; // Si aucune couleur dominante, retourne -1
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : inverseDEL                                                          
-// Auteur : Rapahel                                                                         
-// Entree(s) : pin
-// Sortie : N/A
-// Description : Inverse l'etat de la DEL indiquee
-//////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ * Auteur : Raphael
+ *
+ * Inverse l'état d'une DEL
+ *
+ * @param pin (integer) broche de la DEL à inverser
+ ******************************************************************************************/
 void inverseDEL(int pin)
 {
-  digitalWrite(pin, !digitalRead(pin)); //Inverse l'etat de la pin
+  digitalWrite(pin, !digitalRead(pin)); // Inverse l'etat de la pin
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : eteindreToutesLesLEDs                                                          
-// Auteur : Rapahel                                                                         
-// Entree(s) : N/A
-// Sortie : N/A
-// Description : Eteint toute les DELs
-//////////////////////////////////////////////////////////////////////////////////////
-void eteindreToutesLesDELs(void) 
+/*******************************************************************************************
+ * Auteur : Rapahel
+ * 
+ * Eteint toute les DELs
+ ******************************************************************************************/
+void eteindreToutesLesDELs(void)
 {
   digitalWrite(LED_ROUGE, LOW);
   digitalWrite(LED_VERTE, LOW);
@@ -217,33 +221,37 @@ void eteindreToutesLesDELs(void)
   digitalWrite(LED_BLEUE, LOW);
 }
 
-/**
+/*******************************************************************************************
  * Vérifie la détection d'un mur
- * 
+ *
  * @return (bool) vrai si il y a un mur
- */
+ ******************************************************************************************/
 bool mur()
 {
-  if(digitalRead(PIN_DIST_D) == LOW && digitalRead(PIN_DIST_G) == LOW){
+  if (digitalRead(PIN_DIST_D) == LOW && digitalRead(PIN_DIST_G) == LOW)
+  {
     return true;
   }
-  else return false;
+  else
+    return false;
 }
 
-/**
+/*******************************************************************************************
  * Vérifie le bruit à 5kHz
- * 
+ *
  * @return (bool) vrai si il y a un bruit a 5kHz
- */
+ ******************************************************************************************/
 bool sifflet_5kHz()
 {
-  //TODO verifier le fonctionnement avec le pourcentage d'écart
-  float ratio = analogRead(BRUIT_AMBIENT)/analogRead(SIGNAL_5kHz)*100;
+  // TODO verifier le fonctionnement avec le pourcentage d'écart
+  float ratio = analogRead(BRUIT_AMBIENT) / analogRead(SIGNAL_5kHz) * 100;
 
-  if(ratio > 10){//ecart est a vérifier dans différent contexte de bruit
+  if (ratio > 10)
+  { // ecart est a vérifier dans différent contexte de bruit
     return true;
   }
-  else{ return false;}
-  
+  else
+  {
+    return false;
+  }
 }
- 

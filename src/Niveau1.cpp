@@ -1,13 +1,13 @@
 #include "Niveau1.h"
 #include "Capteurs.h"
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Nom de la fonction : suivreLigne                                                          
-// Auteur : Alexandre Dionne                                                                         
-// Entree(s) : N/A
-// Sortie : couleur
-// Description : suit la ligne et quitte la fonction lorsqu'une couleur est lue
-//////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ * Auteur : Alexandre Dionne
+ * 
+ * suit la ligne détecter par les capteurs de contraste
+ * 
+ * @return couleur (integer) valeur de la coueleur lue
+ ******************************************************************************************/
 int suivreLigne(void)
 {
     unsigned long currentTime;
