@@ -3,7 +3,7 @@
 
 // Variables
 
-// Suiveur de ligne
+// Suiveur de ligne//
 int seuilGauche = 800;
 int seuilCentre = 800;
 <<<<<<< HEAD
