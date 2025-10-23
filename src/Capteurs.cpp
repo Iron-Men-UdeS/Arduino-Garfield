@@ -7,7 +7,32 @@
 int seuilGauche = 800;
 int seuilCentre = 800;
 int seuilDroite = 800;
+//Capteur distance
+float detecDistance(int pin){
+  int voltage = analogRead(pin);
+  voltage= (double) voltage;
+  return (float) (29.988*pow(voltage, -1.173));
+}
+float detecDistanceLin(int pin){
+  int intervale=-1;
+  float voltage = (float) analogRead(pin);
+  float xpoints[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  float ypoints[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  for (int i=0;i<=15;i++){
+    if (voltage>xpoints[i]){
+      intervale++;
+    }
+  }
+  return (((ypoints[intervale+1]-ypoints[intervale])/5)*(voltage-xpoints[intervale]))+ypoints[intervale];
+}
 
+/*******************************************************************************************
+ * Auteur : Amine
+ * 
+ * Determine la valeur seuil du capteur de gauche
+ * 
+ * @return seuil (integer) millieu entre le blanc et le noir
+ ******************************************************************************************/
 // Capteur de couleur
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
 
