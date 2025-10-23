@@ -6,9 +6,6 @@
 // Suiveur de ligne//
 int seuilGauche = 800;
 int seuilCentre = 800;
-<<<<<<< HEAD
-int seuilDroite = 800; 
-=======
 int seuilDroite = 800;
 //Capteur distance
 float detecDistance(int pin){
@@ -28,15 +25,7 @@ float detecDistanceLin(int pin){
   }
   return (((ypoints[intervale+1]-ypoints[intervale])/5)*(voltage-xpoints[intervale]))+ypoints[intervale];
 }
->>>>>>> ce1b88a8c542b01ab91763c77d3780f5b58fcc15
 
-/*******************************************************************************************
- * Auteur : Amine
- * 
- * Determine la valeur seuil du capteur de gauche
- * 
- * @return seuil (integer) millieu entre le blanc et le noir
- ******************************************************************************************/
 // Capteur de couleur
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
 
