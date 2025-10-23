@@ -135,9 +135,9 @@ int lireCapteurs(int capteur)
     valeurDroite = analogRead(CAPTEUR1_DROITE);
   }
 
-  resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
-  resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
-  resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
+  resultat = (valeurGauche <= seuilGauche) ? 1 : 0;
+  resultat = (((valeurCentre <= seuilCentre) ? 1 : 0) << 1) + resultat;
+  resultat = (((valeurDroite <= seuilDroite) ? 1 : 0) << 2) + resultat;
 
   return resultat;
 }

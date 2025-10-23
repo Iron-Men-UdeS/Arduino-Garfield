@@ -3,9 +3,9 @@
 
 /*******************************************************************************************
  * Auteur : Alexandre Dionne
- * 
+ *
  * suit la ligne détecter par les capteurs de contraste
- * 
+ *
  * @return couleur (integer) valeur de la coueleur lue
  ******************************************************************************************/
 int suivreLigne(void)
@@ -15,11 +15,11 @@ int suivreLigne(void)
 
     float i0 = 1; // Indice correcteur moteur gauche
     float i1 = 1; // Indice correcteur moteur droit
-    
+
     int ligne = 0;
 
     previousTime = millis();
-    while(1)
+    while (detectCouleur() == -1)
     {
         currentTime = millis();
         if ((currentTime - previousTime) >= INTERVALLE)
@@ -42,7 +42,9 @@ int suivreLigne(void)
                 i1 = 1;
                 break;
 
-            case 0x04: // 000 100  Aucune correction 
+            case 0x04: // 000 100  Aucune correction
+                Serial.println("Full Gauche");
+                break;
             case 0x0C: // 001 100
             case 0x08: // 001 000
                 i0 = 1;
@@ -64,18 +66,15 @@ int suivreLigne(void)
 
             case 0x3F: // 111 111 ligne partout  Arret complet
             case 0x00: // 000 000 pas de ligne
+            
                 i0 = 0;
                 i1 = 0;
                 break;
             }
             Serial.println(i0);
             Serial.println(i1);
-            //robotSetSpeed(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
-        }
-
-        if(detectCouleur() != -1)
-        {
-          return detectCouleur();  
+            // robotSetSpeed(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
         }
     }
+    return detectCouleur();
 }

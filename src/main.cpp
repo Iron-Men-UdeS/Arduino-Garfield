@@ -18,7 +18,7 @@ Fonctions d'initialisation (setup)
 // -> Se fait appeler au debut du programme
 // -> Se fait appeler seulement un fois
 // -> Generalement on y initilise les varibbles globales
-
+int couleur;
 void setup() 
 {
   BoardInit();
@@ -26,6 +26,7 @@ void setup()
   pinMode(LED_VERTE, OUTPUT);
   pinMode(LED_JAUNE, OUTPUT);
   pinMode(LED_BLEUE, OUTPUT);
+  initCapteurCouleur();
 }
   
 
@@ -37,6 +38,9 @@ Fonctions de boucle infini (loop())
 
 void loop() 
 {
+  couleur = suivreLigne();
+  //couleur = detectCouleur();
+  Serial.println(couleur);
 }
 
 // void setup() 

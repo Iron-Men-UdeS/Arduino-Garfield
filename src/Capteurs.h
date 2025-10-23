@@ -4,16 +4,15 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "Adafruit_TCS34725.h"
-#include "LibRobus.h"
 // Defines
 
 //Suiveur de ligne
-#define CAPTEUR0_GAUCHE A0
-#define CAPTEUR0_CENTRE A1
-#define CAPTEUR0_DROITE A2
-#define CAPTEUR1_GAUCHE A3
-#define CAPTEUR1_CENTRE A4
-#define CAPTEUR1_DROITE A5
+#define CAPTEUR0_GAUCHE A2
+#define CAPTEUR0_CENTRE A3
+#define CAPTEUR0_DROITE A4
+#define CAPTEUR1_GAUCHE A5
+#define CAPTEUR1_CENTRE A6
+#define CAPTEUR1_DROITE A7
 
 //DELS
 #define LED_ROUGE 46
