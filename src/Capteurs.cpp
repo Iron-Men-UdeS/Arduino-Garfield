@@ -44,7 +44,7 @@ int calibrerGauche(void)
  * 
  * @return seuil (integer) millieu entre le blanc et le noir
  ******************************************************************************************/
-int calibreCentre(void)
+int calibreCentre(void) 
 {
   Serial.println("Place le capteur CENTRE sur BLANC");
   delay(2000);
