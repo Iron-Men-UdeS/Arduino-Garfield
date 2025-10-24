@@ -157,22 +157,32 @@ void changeRobot(int direction) {
 
     //fonction permet de changer place avec lequipe da coté, faut lui dire si haut = le robot
     //passe en haut ou bas si le rob ot passe en bas, fonction renvoie rien.
-
+    int time = 3000;
     if (direction == 0) { //techniquement le premier mouv qui va en bas puis a gauche
         tourne(180, droite);
+        delay(time);
         translation(20);
+        delay(time);
         tourne(90, droite);
+        delay(time);
         translation(80);
+        delay(time);
         tourne(90, droite);
+        delay(time);
         translation(20);
     }
 
     if (direction == 1) { //techniquement le deuxieme mouv qui va en haut puis a droite
         translation(20);
+        delay(time);
         tourne(90, droite);
+        delay(time);
         translation(80);
+        delay(time);
         tourne(90, droite);
+        delay(time);
         translation(20);
+        delay(time);
         tourne(180, droite);
     }
 }
