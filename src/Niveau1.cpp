@@ -78,6 +78,140 @@ int suivreLigne(void)
     }
 }
 
+
+/*******************************************************************************************
+ * Auteur : Samuuel B. Manelli
+ * 
+ * Fait la petite dance de l'acte 1
+ ******************************************************************************************/
+void bleu(){
+
+    //La parti ci-dessous fait faire un carrée au robot et le faire revenir dans le même sens qu'il était
+    //Chaque arrête de carrée fera une longueur de 30cm et il va avancer à 50% de la vitesse max
+    tourne(135,0.3, DROITE);
+    avance(30,0.5);
+    for (int i=0; i<3; i++){
+        tourne(90,0.5, DROITE);
+        avance(30,0.5);
+    }
+    tourne(30,0.5,GAUCHE); //redressi le robot pour qu'il soit dans la même direction que au départ de la fonciton
+
+    //Les servomoteur sont activés pour être utiliser lors de la dance=============point pour le style;) 
+    // SERVO_Enable(0);
+    // SERVO_Enable(1);
+    // // fais bouger un bras a 90 et lautre a 45 et ensuite les remets a leur place
+    // SERVO_SetAngle(0,45);
+    // SERVO_SetAngle(0,90)
+
+    // SERVO_SetAngle(0,0);
+    // SERVO_SetAngle(0,0);
+    // //desactive les servomoteur
+    // SERVO_Disable(0);
+    // SERVO_Disable(1);
+}
+
+
+/*******************************************************************************************
+ * Auteur : Samuel B. Manelli
+ * 
+ * Avance d'une distance prédéterminer
+ * @param Distance 80 cm
+ ******************************************************************************************/
+void vert(){
+    avance(80,0.8);
+}
+
+// //amelioration possible faire un while jusqua ce que le suiveur de ligne renvoie un info pour dire qu,il troiver la ligne
+// void vertV2(){
+//     //Avance en ligne droite jusque une ligne soit detecter
+//     while(dectionLigne different du resultat qui est renvoyer lorsque la ligne est detecter){
+//         robotSetSpeed(0.8,0);
+//     }
+// }
+
+
+/*******************************************************************************************
+ * Auteur : Samuel B. Manelli
+ * 
+ * Permet de faire bouger le bras droit uniquement
+ * 
+ * @param position AUCUN, AVANT, ARRIERE, HAUT, BAS
+ * 
+ * 
+ ******************************************************************************************/
+void bougeBrasDroit(int position){
+    //enable juste celui a droite
+    switch(position){
+        //Ne donne aucune instruction donc les servos ne bouge pas
+        case AUCUN:
+        break;
+
+        //Met les bras vers l'avant du robot
+        case AVANT:
+        SERVO_SetAngle(BRAS_DROIT, 90);
+        break;
+        //Met les bras vers l'arrière du robot
+        // case ARRIERE:
+        // SERVO_SetAngle(BRAS_DROIT, voir angle au repos);
+        // break;
+        // //Met les bras vers le haut du robot
+        case HAUT:
+        SERVO_SetAngle(BRAS_DROIT, 175);
+        break;
+        //Met les bras vers le bas du robot
+        case BAS:
+        SERVO_SetAngle(BRAS_DROIT, 5);
+        break;
+    }
+}
+
+
+/*******************************************************************************************
+ * Auteur : Samuel B. Manelli
+ * 
+ * Permet de faire bouger le bras gauche uniquement
+ * 
+ * @param position AUCUN, AVANT, ARRIERE, HAUT, BAS
+ * 
+ ******************************************************************************************/
+void bougeBrasGauche(int position){
+    //enable juste celui utiliser a gauche
+    switch(position){
+        //Ne donne aucune instruction donc les servos ne bouge pas
+        case AUCUN:
+        break;
+        
+        //Met les bras vers l'avant du robot
+        case AVANT:
+        SERVO_SetAngle(BRAS_GAUCHE, 90);
+        break;
+        //Met les bras vers l'arrière du robot
+        // case ARRIERE:
+        // SERVO_SetAngle(BRAS_GAUCHE, voir angle au repos);
+        // break;
+        // //Met les bras vers le haut du robot
+        case HAUT:
+        SERVO_SetAngle(BRAS_GAUCHE, 10);
+        break;
+        //Met les bras vers le bas du robot
+        case BAS:
+        SERVO_SetAngle(BRAS_GAUCHE, 175);
+        break;
+    }
+}
+
+/*******************************************************************************************
+ * Auteur : Samuel B. Manelli
+ * 
+ * Permet de faire bouger le bras et le bras droit simultanément
+ * 
+ * @param posGauche AUCUN, AVANT, ARRIERE, HAUT, BAS
+ * @param posDroit AUCUN, AVANT, ARRIERE, HAUT, BAS
+ ******************************************************************************************/
+void bouge2Bras(int posGauche,int posDroit){
+    bougeBrasGauche(posGauche);
+    bougeBrasDroit(posDroit);
+}
 /*******************************************************************************************
  * Auteur : Simon-Pierre Robert
  * 
