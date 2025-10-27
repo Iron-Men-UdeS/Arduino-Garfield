@@ -5,7 +5,7 @@
 
 // Suiveur de ligne
 int seuilGauche = 800;
-int seuilCentre = 800;
+int seuilCentre = 800; 
 int seuilDroite = 800;
 
 // Capteur de couleur
