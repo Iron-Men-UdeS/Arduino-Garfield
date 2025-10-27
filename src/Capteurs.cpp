@@ -32,10 +32,10 @@ float detecDistance(int pin){
  * @return la distance, corrigée, en cm
  ******************************************************************************************/
 float corr(int pin, float valeurCapteur){
-  if (pin==DISTANCE1){
+  if (pin==DISTANCEA){
     return (valeurCapteur+2.22)/1.272;
   }
-  else if(pin==DISTANCE2){
+  else if(pin==DISTANCEC){
     return (valeurCapteur+4.3587)/1.3894;
   }
   else{
