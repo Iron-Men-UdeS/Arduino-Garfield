@@ -12,8 +12,6 @@ Inclure les librairies de functions que vous voulez utiliser
 
 #include "main.h"
 
-float corr;
-
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
@@ -28,6 +26,8 @@ void setup()
   pinMode(LED_VERTE, OUTPUT);
   pinMode(LED_JAUNE, OUTPUT);
   pinMode(LED_BLEUE, OUTPUT);
+  SERVO_Enable(0);
+  SERVO_Enable(1);
 }
   
 
@@ -36,27 +36,11 @@ void setup()
 Fonctions de boucle infini (loop())
 **************************************************************************** */
 // -> Se fait appeler perpetuellement suite au "setup"
-int currentMillis = 0;
+
 void loop() 
 {
-  robotSetSpeed(0.2,-1,corr);
-  Serial.println(corr);
-
-  // int gauche = ENCODER_Read(0);
-  // int droit = ENCODER_Read(1);
-  // Serial.println("encodeur gauche : " + String(gauche));
-  // Serial.println("encodeur droit : " + String(droit));
-  // Serial.println("différence : " + String(gauche - droit));
-  // Serial.println("");
-  // Serial.println("avance");
-
-  //avance(50,0.7);
-  
-  // tourne(QUART_DE_TOUR ,0.3,GAUCHE);
-  // delay(1000);
-  // delay(1000);
-
-  
+SERVO_SetAngle(1,0);
+SERVO_SetAngle(0,180);
 }
 
 // void setup() 
