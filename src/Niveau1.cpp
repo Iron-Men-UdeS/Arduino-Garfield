@@ -68,7 +68,9 @@ int suivreLigne(void)
             }
             Serial.println(i0);
             Serial.println(i1);
-            //Avance(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
+            //avance(VITESSE_MOTEUR*i0, VITESSE_MOTEUR*i1);
+            MOTOR_SetSpeed(GAUCHE, VITESSE_MOTEUR*i0);
+            MOTOR_SetSpeed(DROITE, VITESSE_MOTEUR*i1);
         }
 
         if(detectCouleur() != -1)
@@ -251,7 +253,7 @@ void rouge() {
       // Quille détectée -> on enregistre et on arrête immédiatement le balayage
       quilleDetectee = true;
       distanceDetectee = distanceLue;
-      angleDetection = angle;
+      angle = angleDetection;
       break; // On arrête le balayage ici
     }
   }
@@ -265,20 +267,27 @@ void rouge() {
 
   // --- 3. Avancer directement pour la faire tomber ---
   avance(distanceDetectee + 2, VITESSE);  // +2 cm pour s'assurer du contact
-  delay(500);
+  //delay(500);
 
   // --- 4. Fait un 180 ---
   tourne(2*QUART_DE_TOUR, VITESSE_MOTEUR, DROITE);
-  delay(300);
+  //delay(300);
 
   // --- 5. Avance pour revenir à la ligne ---
   avance(distanceDetectee + 2, VITESSE);
-  delay(500);
+  //delay(500);
 
   // --- 6. Se remettre droit (revenir à orientation initiale) ---
-  Serial.println(angleDetection);
-  tourne(angleDetection, VITESSE_MOTEUR, GAUCHE);
-  delay(300);
+  float angleD;
+  if(angleDetection >= 180){
+    angleD = angleDetection - 180;
+    tourne(angleD, VITESSE_MOTEUR, DROITE);
+  }
+  else if ( angleDetection < 180){
+    angleD = 90+angleDetection;
+    tourne(angleD, VITESSE_MOTEUR, GAUCHE);
+  }
+  //delay(300);
 }
 
 /*******************************************************************************************

@@ -22,7 +22,7 @@ float detecDistance(int pin){
     voltage+=analogRead(pin);
   }
   voltage= ((double) voltage)/8;
-  return corr(pin,(float) (14994*pow(voltage, -1.173)));
+  return corrDist(pin,(float) (14994*pow(voltage, -1.173)));
 }
 /*******************************************************************************************
  * Auteur : Justin
@@ -31,7 +31,7 @@ float detecDistance(int pin){
  * arguments: la pin du capteur dont proviennent les données, la valeur non corrigée (cm)
  * @return la distance, corrigée, en cm
  ******************************************************************************************/
-float corr(int pin, float valeurCapteur){
+float corrDist (int pin, float valeurCapteur){
   if (pin==DISTANCEA){
     return (valeurCapteur+2.22)/1.272;
   }
