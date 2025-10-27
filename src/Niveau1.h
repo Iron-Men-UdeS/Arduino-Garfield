@@ -3,6 +3,7 @@
 
 //Includes 
 #include <Arduino.h>
+#include "Mouvement.h"
 // Defines
 #define INTERVALLE 100
 #define VITESSE_MOTEUR 0.5

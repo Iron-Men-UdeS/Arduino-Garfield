@@ -123,11 +123,11 @@ void vert(){
     avance(80,0.8);
 }
 
-//amelioration possible faire un while jusqua ce que le suiveur de ligne renvoie un info pour dire qu,il troiver la ligne
+// //amelioration possible faire un while jusqua ce que le suiveur de ligne renvoie un info pour dire qu,il troiver la ligne
 // void vertV2(){
 //     //Avance en ligne droite jusque une ligne soit detecter
 //     while(dectionLigne different du resultat qui est renvoyer lorsque la ligne est detecter){
-//         robotSetSpeed(0.8,0)
+//         robotSetSpeed(0.8,0);
 //     }
 // }
 
@@ -153,16 +153,16 @@ void bougeBrasDroit(int position){
         SERVO_SetAngle(BRAS_DROIT, 90);
         break;
         //Met les bras vers l'arrière du robot
-        case ARRIERE:
-        SERVO_SetAngle(BRAS_DROIT, voir angle au repos);
-        break;
-        //Met les bras vers le haut du robot
+        // case ARRIERE:
+        // SERVO_SetAngle(BRAS_DROIT, voir angle au repos);
+        // break;
+        // //Met les bras vers le haut du robot
         case HAUT:
-        SERVO_SetAngle(BRAS_DROIT, 180);
+        SERVO_SetAngle(BRAS_DROIT, 175);
         break;
         //Met les bras vers le bas du robot
         case BAS:
-        SERVO_SetAngle(BRAS_DROIT, 0);
+        SERVO_SetAngle(BRAS_DROIT, 5);
         break;
     }
 }
@@ -188,16 +188,16 @@ void bougeBrasGauche(int position){
         SERVO_SetAngle(BRAS_GAUCHE, 90);
         break;
         //Met les bras vers l'arrière du robot
-        case ARRIERE:
-        SERVO_SetAngle(BRAS_GAUCHE, voir angle au repos);
-        break;
-        //Met les bras vers le haut du robot
+        // case ARRIERE:
+        // SERVO_SetAngle(BRAS_GAUCHE, voir angle au repos);
+        // break;
+        // //Met les bras vers le haut du robot
         case HAUT:
-        SERVO_SetAngle(BRAS_GAUCHE, 0);
+        SERVO_SetAngle(BRAS_GAUCHE, 10);
         break;
         //Met les bras vers le bas du robot
         case BAS:
-        SERVO_SetAngle(BRAS_GAUCHE, 180);
+        SERVO_SetAngle(BRAS_GAUCHE, 175);
         break;
     }
 }
