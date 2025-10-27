@@ -41,6 +41,13 @@
 #define DISTANCE2 3
 // Variables
 
+struct suiveur{
+  int pinGauche,pinDroite,pinCentre;
+  int seuilCentre;
+  int seuilDroite;
+  int seuilGauche;
+  int readCentre,readDroite,readGauche;
+};
 
 // //Prototypes de fonctions
 int calibrerGauche(void);
@@ -58,4 +65,5 @@ float detecDistance(int pin);
 float detecDistanceLin(int pin);
 float corrDist(int pin, float valeurCapteur);
 float calibreSuiveur(int pin);
+int lireSuiveur(struct suiveur);
 #endif

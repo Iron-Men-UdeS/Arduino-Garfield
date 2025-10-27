@@ -15,13 +15,11 @@ struct suiveur{
   int seuilCentre;
   int seuilDroite;
   int seuilGauche;
+  int readCentre,readDroite,readGauche;
 };
-int seuilGauche = 800;
-int seuilCentre = 800;
-int seuilDroite = 800;
 
-suiveur suiveurGauche = {CAPTEUR0_GAUCHE,CAPTEUR0_DROITE,CAPTEUR0_CENTRE,800,800,800};
-suiveur suiveurDroite = {CAPTEUR1_GAUCHE,CAPTEUR1_DROITE,CAPTEUR1_CENTRE,800,800,800};
+suiveur suiveurGauche = {CAPTEUR0_GAUCHE,CAPTEUR0_DROITE,CAPTEUR0_CENTRE,800,800,800,0,0,0};
+suiveur suiveurDroite = {CAPTEUR1_GAUCHE,CAPTEUR1_DROITE,CAPTEUR1_CENTRE,800,800,800,0,0,0};
 
 /*##### Fonctions #####*/
 
@@ -179,20 +177,13 @@ float calibreSuiveur(int pin){
  * 
  * @return seuil (integer) millieu entre le blanc et le noir
  ******************************************************************************************/
-void calibrationTotale(void)
+void calibrationTotale(struct suiveur mySuiveur)
 {
-  suiveurGauche.seuilGauche = calibreSuiveur(suiveurGauche.pinGauche);
+  mySuiveur.seuilGauche = calibreSuiveur(suiveurGauche.pinGauche);
   delay(2500);
-  suiveurGauche.seuilCentre = calibreSuiveur(suiveurGauche.pinCentre);
+  mySuiveur.seuilCentre = calibreSuiveur(suiveurGauche.pinCentre);
   delay(2500);
-  suiveurGauche.seuilDroite = calibreSuiveur(suiveurGauche.pinDroite);
-  delay(2500);
-
-  suiveurDroite.seuilGauche = calibreSuiveur(suiveurDroite.pinGauche);
-  delay(2500);
-  suiveurDroite.seuilCentre = calibreSuiveur(suiveurDroite.pinCentre);
-  delay(2500);
-  suiveurDroite.seuilDroite = calibreSuiveur(suiveurDroite.pinDroite);
+  mySuiveur.seuilDroite = calibreSuiveur(suiveurGauche.pinDroite);
   delay(2500);
 }
 
@@ -227,9 +218,23 @@ int lireCapteurs(int capteur)
     valeurDroite = analogRead(CAPTEUR1_DROITE);
   }
 
-  resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
-  resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
-  resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
+//  resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
+  //resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
+  //resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
+
+  return resultat;
+}
+
+int lireSuiveur(struct suiveur mySuiveur)
+{
+  mySuiveur.readCentre = analogRead(mySuiveur.pinCentre);
+  mySuiveur.readDroite = analogRead(mySuiveur.pinDroite);
+  mySuiveur.readGauche = analogRead(mySuiveur.pinGauche);
+
+  int resultat = 0;
+  resultat = (mySuiveur.readGauche >= mySuiveur.seuilGauche) ? 1 : 0;
+  resultat = (((mySuiveur.readCentre >= mySuiveur.seuilCentre) ? 1 : 0) << 1) + resultat;
+  resultat = (((mySuiveur.readDroite >= mySuiveur.seuilDroite) ? 1 : 0) << 2) + resultat;
 
   return resultat;
 }
