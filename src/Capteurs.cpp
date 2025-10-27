@@ -3,7 +3,7 @@
 
 // Variables
 
-// Suiveur de ligne
+// Suiveur de ligne//
 int seuilGauche = 800;
 int seuilCentre = 800;
 int seuilDroite = 800;
@@ -43,13 +43,6 @@ float corr(int pin, float valeurCapteur){
   }
 }
 
-/*******************************************************************************************
- * Auteur : Amine
- * 
- * Determine la valeur seuil du capteur de gauche
- * 
- * @return seuil (integer) millieu entre le blanc et le noir
- ******************************************************************************************/
 // Capteur de couleur
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
 
@@ -86,7 +79,7 @@ int calibrerGauche(void)
  * 
  * @return seuil (integer) millieu entre le blanc et le noir
  ******************************************************************************************/
-int calibreCentre(void)
+int calibreCentre(void) 
 {
   Serial.println("Place le capteur CENTRE sur BLANC");
   delay(2000);

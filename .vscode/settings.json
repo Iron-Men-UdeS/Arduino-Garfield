@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "librobus.h": "c"
+        "librobus.h": "c",
+        "capteurs.h": "c"
     }
 }
