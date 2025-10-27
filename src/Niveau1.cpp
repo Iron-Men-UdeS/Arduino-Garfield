@@ -1,5 +1,8 @@
 #include "Niveau1.h"
 #include "Capteurs.h"
+#include "Mouvement.h"
+
+float correction=0;
 
 /*******************************************************************************************
  * Auteur : Alexandre Dionne
@@ -78,4 +81,147 @@ int suivreLigne(void)
           return detectCouleur();  
         }
     }
+}
+
+/*******************************************************************************************
+ * Auteur : Raphael
+ * 
+ * Description : Effectue les mouvements sur la croix pour l'acte 2
+ *
+ * @param posI (int [0 à 5]) Position initiale sur la croix
+ *
+ * @param posF (int [0 à 5]) Position finale sur la croix
+ *
+ ******************************************************************************************/
+void changePlace(int posI,int posF)
+{
+  if(posI==1&&posF==2){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(28.28)&&ENCODER_Read(0)<distanceEnco(28.28)){
+    robotSetSpeed(-calculVitesse(0.7,0,distanceEnco(28.28)),0,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),-1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+  }
+  if(posI==2&&posF==3){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),-1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(28.28)&&ENCODER_Read(0)<distanceEnco(28.28)){
+    robotSetSpeed(-calculVitesse(0.7,0,distanceEnco(28.28)),0,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+  }
+  if(posI==3&&posF==4){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(28.28)&&ENCODER_Read(0)<distanceEnco(28.28)){
+    robotSetSpeed(calculVitesse(0.7,0,distanceEnco(28.28)),0,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),-1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+  }
+  if(posI==4&&posF==1){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),-1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(28.28)&&ENCODER_Read(0)<distanceEnco(28.28)){
+    robotSetSpeed(calculVitesse(0.7,0,distanceEnco(28.28)),0,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(45)&&ENCODER_Read(0)<angleEnco(45)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(45)),1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+  }
+  if(posI==4&&posF==0){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(90)&&ENCODER_Read(0)<angleEnco(90)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(90)),-1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(20)&&ENCODER_Read(0)<distanceEnco(20)){
+    robotSetSpeed(calculVitesse(0.7,0,distanceEnco(20)),0,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   while(ENCODER_Read(1)<angleEnco(90)&&ENCODER_Read(0)<angleEnco(90)){
+    robotSetSpeed(calculVitesse(0.7,0,angleEnco(90)),1,correction);
+   }
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+  }
+  if(posI==0&&posF==1){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(20)&&ENCODER_Read(0)<distanceEnco(20)){
+    robotSetSpeed(calculVitesse(0.7,0,distanceEnco(20)),0,correction);
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   }}
+  if(posI==1&&posF==0){
+    ENCODER_Reset(0);
+    ENCODER_Reset(1);
+   while(ENCODER_Read(1)<distanceEnco(20)&&ENCODER_Read(0)<distanceEnco(20)){
+    robotSetSpeed(-calculVitesse(0.7,0,distanceEnco(20)),0,correction);
+   robotSetSpeed(0,0,correction);
+   ENCODER_Reset(0);
+   ENCODER_Reset(1);
+   }
+}
 }

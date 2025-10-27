@@ -9,7 +9,7 @@ Date: Derniere date de modification
 /* ****************************************************************************
 Inclure les librairies de functions que vous voulez utiliser
 **************************************************************************** */
-
+#include "Mouvement.h"
 #include "main.h"
 
 /* ****************************************************************************
