@@ -78,3 +78,17 @@ int suivreLigne(void)
     }
     return detectCouleur();
 }
+
+/*******************************************************************************************
+ * Auteur : Alexandre Dionne
+ *
+ * suit la ligne détecter par les capteurs de contraste
+ *
+ * @param positionA (integer) Position actuelle du robot
+ * 
+ * @param positionF (integer) Position finale du robot
+ ******************************************************************************************/
+void changePlace(int positionA, int positionF)
+{
+
+}
