@@ -3,6 +3,7 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 #include <Wire.h>
+#include <math.h>
 #include "Adafruit_TCS34725.h"
 #include "LibRobus.h"
 // Defines
@@ -35,6 +36,9 @@
 #define BRUIT_AMBIENT A0
 #define SIGNAL_5kHz A1
 
+//Capteur de distance
+#define DISTANCE1 A8
+#define DISTANCE2 3
 // Variables
 
 
@@ -50,5 +54,7 @@ void inverseDEL(int pin);
 void eteindreToutesLesDELs(void);
 bool mur();
 bool sifflet_5kHz();
-
+float detecDistance(int pin);
+float detecDistanceLin(int pin);
+float corr(int pin, float valeurCapteur);
 #endif
