@@ -3,6 +3,8 @@
 
 //Includes 
 #include <Arduino.h>
+#include <LibRobus.h>
+#include "Capteurs.h"
 #include "Mouvement.h"
 #include "Capteurs.h"
 // Defines
@@ -15,8 +17,8 @@
 #define AUCUN -1
 #define BRAS_DROIT 1
 #define BRAS_GAUCHE 0
+#define TIME 3000
 // Variables externe
-
 
 // //Prototypes de fonctions
 int suivreLigne(void);
@@ -26,4 +28,6 @@ void bougeBrasDroit(int position);
 void bougeBrasGauche(int position);
 void bouge2Bras(int posGauche,int posDroit);
 void randomDEL();
+void rouge();
+void changeRobot(int direction);
 #endif

@@ -15,6 +15,7 @@ Inclure les librairies de functions que vous voulez utiliser
 suiveur suiveurGauche = {CAPTEUR0_GAUCHE,CAPTEUR0_DROITE,CAPTEUR0_CENTRE,800,800,800,0,0,0};
 suiveur suiveurDroite = {CAPTEUR1_GAUCHE,CAPTEUR1_DROITE,CAPTEUR1_CENTRE,800,800,800,0,0,0};
 
+//float corr;
 
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
@@ -58,6 +59,35 @@ tourne(QUART_DE_TOUR,0.25,GAUCHE);
 avance(20, 0.25);
 tourne(QUART_DE_TOUR,0.25,DROITE);
 avance(20,0.25);
+
+
+
+  // int couleur=suivreLigne();
+  // switch (couleur){
+  //   case couleurRouge:
+  //   inverseDEL(LED_ROUGE);
+  //   rouge();
+  //   inverseDEL(LED_ROUGE);
+  //   break;
+
+  //   case couleurVert:
+  //   inverseDEL(LED_VERTE);
+  //   vert();
+  //   inverseDEL(LED_VERTE);
+  //   break;
+
+  //   case couleurBleu:
+  //   inverseDEL(LED_BLEUE);
+  //   bleu();
+  //   inverseDEL(LED_BLEUE);
+  //   break;
+
+  //   case couleurJaune:
+  //   inverseDEL(LED_JAUNE);
+  //   jaune();
+  //   inverseDEL(LED_JAUNE);
+  //   break;
+  // }
 }
 
 // void setup() 

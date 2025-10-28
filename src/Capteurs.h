@@ -37,8 +37,8 @@
 #define SIGNAL_5kHz A1
 
 //Capteur de distance
-#define DISTANCE1 A8
-#define DISTANCE2 3
+#define DISTANCEA A2
+#define DISTANCEC A3
 // Variables
 
 struct suiveur{
