@@ -19,36 +19,48 @@ Fonctions d'initialisation (setup)
 // -> Se fait appeler seulement un fois
 // -> Generalement on y initilise les varibbles globales
 int couleur;
-void setup() 
+void setup()
 {
   BoardInit();
   pinMode(LED_ROUGE, OUTPUT);
   pinMode(LED_VERTE, OUTPUT);
   pinMode(LED_JAUNE, OUTPUT);
   pinMode(LED_BLEUE, OUTPUT);
- // initCapteurCouleur();
+  // initCapteurCouleur();
 }
-  
-
 
 /* ****************************************************************************
 Fonctions de boucle infini (loop())
 **************************************************************************** */
 // -> Se fait appeler perpetuellement suite au "setup"
 
-void loop() 
+void loop()
 {
   // Serial.print("OK");
   couleur = suivreLigne();
-  //couleur = detectCouleur();
-  Serial.println("couleur");
+  switch (couleur)
+  {
+  case 0:
+  inverseDEL(LED_ROUGE);
+    break;
+  case 1:
+  inverseDEL(LED_VERTE);
+    break;
+  case 2:
+  inverseDEL(LED_BLEUE);
+    break;
+  case 3:
+  inverseDEL(LED_JAUNE);
+    break;
+  }
+  // couleur = detectCouleur();
+  //  Serial.println("couleur");
 
   // Serial.println(analogRead(CAPTEUR1_DROITE));
   // delay(1000);
-
 }
 
-// void setup() 
+// void setup()
 // {
 //   Wire.begin();
 //   BoardInit();
