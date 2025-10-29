@@ -3,6 +3,7 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 #include <Wire.h>
+#include <math.h>
 #include "Adafruit_TCS34725.h"
 
 // Defines
@@ -35,8 +36,18 @@
 #define BRUIT_AMBIENT A0
 #define SIGNAL_5kHz A1
 
+//Capteur de distance
+#define DISTANCEA A2
+#define DISTANCEC A3
 // Variables
 
+struct suiveur{
+  int pinGauche,pinDroite,pinCentre;
+  int seuilCentre;
+  int seuilDroite;
+  int seuilGauche;
+  int readCentre,readDroite,readGauche;
+};
 
 // //Prototypes de fonctions
 int calibrerGauche(void);
@@ -50,5 +61,9 @@ void inverseDEL(int pin);
 void eteindreToutesLesDELs(void);
 bool mur();
 bool sifflet_5kHz();
-
+float detecDistance(int pin);
+float detecDistanceLin(int pin);
+float corrDist(int pin, float valeurCapteur);
+float calibreSuiveur(int pin);
+int lireSuiveur(struct suiveur);
 #endif

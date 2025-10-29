@@ -44,7 +44,7 @@ int calibrerGauche(void)
  * 
  * @return seuil (integer) millieu entre le blanc et le noir
  ******************************************************************************************/
-int calibreCentre(void)
+int calibreCentre(void) 
 {
   Serial.println("Place le capteur CENTRE sur BLANC");
   delay(2000);
@@ -96,13 +96,20 @@ int calibrationDroite(void)
  * 
  * @return seuil (integer) millieu entre le blanc et le noir
  ******************************************************************************************/
-void calibrationTotale(void)
+void calibrationTotale(struct suiveur mySuiveur)
 {
-  seuilGauche = calibrerGauche();
+  suiveurGauche.seuilGauche = calibreSuiveur(suiveurGauche.pinGauche);
   delay(2500);
-  seuilCentre = calibreCentre();
+  suiveurGauche.seuilCentre = calibreSuiveur(suiveurGauche.pinCentre);
   delay(2500);
-  seuilDroite = calibrationDroite();
+  suiveurGauche.seuilDroite = calibreSuiveur(suiveurGauche.pinDroite);
+  delay(2500);
+
+  suiveurDroite.seuilGauche = calibreSuiveur(suiveurDroite.pinGauche);
+  delay(2500);
+  suiveurDroite.seuilCentre = calibreSuiveur(suiveurDroite.pinCentre);
+  delay(2500);
+  suiveurDroite.seuilDroite = calibreSuiveur(suiveurDroite.pinDroite);
   delay(2500);
 }
 
@@ -141,9 +148,23 @@ int lireCapteurs(int capteur)
     // Serial.println(valeurDroite);
   }
 
-  resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
-  resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
-  resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
+//  resultat = (valeurGauche >= seuilGauche) ? 1 : 0;
+  //resultat = (((valeurCentre >= seuilCentre) ? 1 : 0) << 1) + resultat;
+  //resultat = (((valeurDroite >= seuilDroite) ? 1 : 0) << 2) + resultat;
+
+  return resultat;
+}
+
+int lireSuiveur(struct suiveur mySuiveur)
+{
+  mySuiveur.readCentre = analogRead(mySuiveur.pinCentre);
+  mySuiveur.readDroite = analogRead(mySuiveur.pinDroite);
+  mySuiveur.readGauche = analogRead(mySuiveur.pinGauche);
+
+  int resultat = 0;
+  resultat = (mySuiveur.readGauche >= mySuiveur.seuilGauche) ? 1 : 0;
+  resultat = (((mySuiveur.readCentre >= mySuiveur.seuilCentre) ? 1 : 0) << 1) + resultat;
+  resultat = (((mySuiveur.readDroite >= mySuiveur.seuilDroite) ? 1 : 0) << 2) + resultat;
 
   return resultat;
 }
@@ -166,7 +187,7 @@ void initCapteurCouleur(void)
 /*******************************************************************************************
  * Auteur : Rapahel
  * 
- * Initialise le capteur de couleur
+ * @return couleur détecté : Rouge = 0, Vert = 1, Bleu = 2, Jaune = 3, aucune couleur = -1
  ******************************************************************************************/
 int detectCouleur(void)
 {
@@ -180,19 +201,19 @@ int detectCouleur(void)
   float rouge = (float)r / total; // variable rouge est la proportion de la couleur
   float vert = (float)g / total;  // la meme avec vert, le float entre parenthèses sert à faire en sorte que la division ne soit pas entière
   float bleu = (float)b / total;  // la meme avec bleu
-  if (rouge > bleu * 1.3 && rouge > vert * 1.3)
+  if (rouge* 1.15 > bleu  && rouge* 1.1 > vert)
   {                      // Verifie si rouge est dominant sur les autres couleurs par un coefficient de 1.3
     return couleurRouge; // Renvoie 0
   }
-  else if (bleu > rouge * 1.3 && bleu > vert * 1.3)
+  else if (bleu*1.1 > rouge && bleu*1.1 > vert )
   {
     return couleurBleu;
   }
-  else if (vert > rouge * 1.3 && vert > bleu * 1.3)
+  else if (vert*0.7 > rouge && vert*0.85 > bleu)
   {
     return couleurVert;
   }
-  else if ((rouge + vert) / 2 > bleu * 1.2)
+  else if ((rouge + vert)*0.4 > bleu )
   { // Pour le jaune, la moitié de rouge et vert combiné avec un plus petit coefficient
     return couleurJaune;
   }

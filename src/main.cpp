@@ -11,6 +11,12 @@ Inclure les librairies de functions que vous voulez utiliser
 **************************************************************************** */
 
 #include "main.h"
+#define act 1
+
+// suiveur suiveurGauche = {CAPTEUR0_GAUCHE,CAPTEUR0_DROITE,CAPTEUR0_CENTRE,800,800,800,0,0,0};
+// suiveur suiveurDroite = {CAPTEUR1_GAUCHE,CAPTEUR1_DROITE,CAPTEUR1_CENTRE,800,800,800,0,0,0};
+
+// float corr;
 
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
@@ -20,6 +26,8 @@ Fonctions d'initialisation (setup)
 // -> Generalement on y initilise les varibbles globales
 int couleur;
 void setup()
+
+void setup()
 {
   BoardInit();
   pinMode(LED_ROUGE, OUTPUT);
@@ -28,6 +36,16 @@ void setup()
   pinMode(LED_BLEUE, OUTPUT);
   // initCapteurCouleur();
 }
+  // pinMode(LED_ROUGE, OUTPUT);
+  // pinMode(LED_VERTE, OUTPUT);
+  // pinMode(LED_JAUNE, OUTPUT);
+  // pinMode(LED_BLEUE, OUTPUT);
+  // delay(500);
+  // SERVO_Enable(0);
+  // SERVO_Enable(1);
+
+  // avance(20, -0.5);
+}
 
 /* ****************************************************************************
 Fonctions de boucle infini (loop())
@@ -35,60 +53,49 @@ Fonctions de boucle infini (loop())
 // -> Se fait appeler perpetuellement suite au "setup"
 
 void loop()
+// float corr;
+void loop()
 {
-  // Serial.print("OK");
-  couleur = suivreLigne();
+  //############### ACT 1 ###############
+  #if act == 1
+
+  int couleur = suivreLigne();
   switch (couleur)
   {
-  case 0:
-  inverseDEL(LED_ROUGE);
+    
+    case 0:
+    rouge2();
     break;
-  case 1:
-  inverseDEL(LED_VERTE);
+    
+    case 1:
+    vert();
     break;
-  case 2:
-  inverseDEL(LED_BLEUE);
+    
+    case 2:
+    bleu();
     break;
-  case 3:
-  inverseDEL(LED_JAUNE);
+
+    case 3:
+    jauneAntoine();
+    break;
+    
+    default:
     break;
   }
-  // couleur = detectCouleur();
-  //  Serial.println("couleur");
+  #endif
+//#####################################
 
-  // Serial.println(analogRead(CAPTEUR1_DROITE));
-  // delay(1000);
+
+//############### ACT 2 ###############
+#if act == 2
+
+
+
+
+#endif
+//#####################################
+
+
+
 }
 
-// void setup()
-// {
-//   Wire.begin();
-//   BoardInit();
-//   pinMode(LED_ROUGE, OUTPUT);
-//   pinMode(LED_VERTE, OUTPUT);
-//   pinMode(LED_JAUNE, OUTPUT);
-//   pinMode(LED_BLEUE, OUTPUT);
-
-//   if (tcs.begin()) {        //S'assure que le capteur est detecte
-//   tcs.setInterrupt(false);
-//   delay(100);}
-// }
-
-// void loop() {
-//    eteindreToutesLesLEDs();
-
-//   if(detecCouleur()==couleurRouge){
-//   inverseDEL(LED_ROUGE);
-//   }
-//   if(detecCouleur()==couleurBleu){
-//   inverseDEL(LED_BLEUE);
-//   }
-//   if(detecCouleur()==couleurJaune){
-//   inverseDEL(LED_JAUNE);
-//   }
-//   if(detecCouleur()==couleurVert){
-//   inverseDEL(LED_VERTE);
-//   }
-//   delay(250);
-
-// }

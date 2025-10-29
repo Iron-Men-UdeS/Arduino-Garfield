@@ -7,7 +7,7 @@
  *
  * Utilise les définitions:
  *
- * TOUR_COMPLET (nb de tick pour un tour de roue)
+ * TOUR_COMPLET_ENCO (nb de tick pour un tour de roue)
  *
  * CIRCON_ROUE_CM (circonférence d'une roue en centimètre)
  *
@@ -17,7 +17,7 @@
  ******************************************************************************************/
 uint32_t distanceEnco(float distanceCM)
 {
-    uint32_t val = (TOUR_COMPLET / CIRCON_ROUE_CM) * distanceCM;
+    uint32_t val = (TOUR_COMPLET_ENCO / CIRCON_ROUE_CM) * distanceCM;
     return val;
 }
 
@@ -28,18 +28,18 @@ uint32_t distanceEnco(float distanceCM)
  *
  * Utilise les définitions:
  *
- * TOUR_COMPLET (nb de tick pour un tour de roue)
+ * TOUR_COMPLET_ENCO (nb de tick pour un tour de roue)
  *
  * CIRCON_ROUE_CM (circonférence d'une roue en centimètre)
  *
  * @param angleDEG (integer) angle de rotation en degré
  * @return (integer 32 bits non-signé) rotation en tick d'encodeur
  ******************************************************************************************/
-uint32_t angleEnco(int angleDeg)
+uint32_t angleEnco(float angleDeg)
 {
     float rad = radians(angleDeg);
     float deplacementCM = (rad * (19 / 2));
-    return round((TOUR_COMPLET * deplacementCM) / CIRCON_ROUE_CM);
+    return round((TOUR_COMPLET_ENCO * deplacementCM) / CIRCON_ROUE_CM);
 }
 
 /*******************************************************************************************
@@ -64,12 +64,18 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
 {
     double vit;
     double demi = positionFinal / 2;
-    double quart = positionFinal / 4;
+    //double tier = positionFinal / 3;
+    double quart = positionFinal/ 4;
+    static byte count = 0;
+    bool start = false;
+    int sign = 0;
+    maxSpeed >= 0 ? sign = 1: sign = -1;
 
     if (position < quart)
     { // si dans le premier quart du déplacement accélaire jusqu'a la vitesse requise
         double rate = (position / quart * 6.0) - 3.0;
         vit = 1 / (exp(-rate) + 1);
+        //start = true;
     }
     else if (position >= demi)
     { // ralentie jusqu'a 0 a partir de la moitié du déplacement
@@ -83,16 +89,29 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
     vit = vit * maxSpeed; // convertie le facteur vit (entre 0 et 1) en facteur entre 0 et maxSpeed
 
     // vérifie si la vitesse dépasse extremum et la corrige en fonction
-    if (vit < 0.2)
+    if (vit < 0.15 )
     {
-        return 0.2;
+        if(start == true)
+        {
+          vit = 0.015 * count;
+          count++;
+          start = false;
+        }
+        else
+        {
+          vit = 0.15;
+          count = 0;
+        }
+        vit =! 0 ? vit = 0.15: vit = 0;
+        return vit*sign;
     }
-    else if (vit > 1)
+    else if (abs(vit) > 1)
     {
-        return 1.0;
+        return 1.0*sign;
     }
     else
     {
+        count = 0;
         return vit;
     }
 }
@@ -115,16 +134,20 @@ double calculVitesse(float maxSpeed, uint32_t position, uint32_t positionFinal)
  ******************************************************************************************/
 double pid(float error, float &lastError)
 {
-    static float integral;
-
+    static float integral = 0;
     static double lastMillis = 0;
     static double difTemps = 0;
 
-    difTemps = (millis() - lastMillis) / 1000;
+    difTemps = (millis() - lastMillis)/1000;
+    (difTemps <= 0)? difTemps = 0.000001:difTemps = difTemps;// si diff de temps = 0 on le change pour 1 milliSeconde
+
     lastMillis = millis();
     double proportional = error;
     integral += error * difTemps;
+    (integral == NAN)? integral = 0:integral = integral;//si not a number on change pour 0
+    
     double derive = (error - lastError) / difTemps;
+    (derive == NAN)?derive = 0:derive = derive; //si not a number on change pour 0
     lastError = error;
     double out = (KP * proportional) + (KI * integral) + (KD * derive);
     return out;
@@ -168,11 +191,205 @@ void robotSetSpeed(float vitesse, int direction, float &correction)
         break;
     }
 
-    float setPoint = ENCODER_Read(GAUCHE);
-    float mesure = ENCODER_Read(DROITE);
+    float setPoint = abs(ENCODER_Read(GAUCHE));
+    float mesure = abs(ENCODER_Read(DROITE));
     float error = setPoint - mesure;
     static float previousError = 0;
     correction = correction + pid(error, previousError);
+}
+
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Description : Fait avancer le robot d'une nombre de centimètre
+ *
+ * @param vitesse (float [0 à 0.8]) vitesse des moteur
+ *
+ * @param distanceCM (int) distance du déplacement [cm]
+ *
+ ******************************************************************************************/
+void avance(int distanceCM, float vitesse){
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+  float correction = 0;
+  float deplacement = distanceEnco(distanceCM);
+  float setpoint = ENCODER_Read(GAUCHE);
+  float lastErr = 0;
+  float speedG = vitesse;
+  float speedD = vitesse;
+  while(deplacement - abs(setpoint) > 0){
+
+    speedG = calculVitesse(vitesse , setpoint, deplacement);
+    speedD = calculVitesse(vitesse + correction, setpoint, deplacement) ;
+    setpoint = ENCODER_Read(GAUCHE);
+    float real = ENCODER_Read(DROITE);
+    float err = setpoint - real;
+    correction = correction+pid(err,lastErr);
+    Serial.println("");
+    MOTOR_SetSpeed(GAUCHE, speedG);
+    MOTOR_SetSpeed(DROITE, speedD);
+    lastErr = err;
+  }
+  correction = 0;
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+}
+
+
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Description : Fait avancer le robot d'une nombre de centimètre
+ * 
+ * Define : TOUR_COMPLET = 360 deg,   QUART_DE_TOUR = 90 deg
+ *
+ * @param angleDeg (float) angle de rotation
+ * 
+ * @param vitesse (float [0 à 0.8]) vitesse des moteur
+ *
+ * @param direction (bool) direction de rotation: false = GAUCHE, true = DROITE
+ *
+ ******************************************************************************************/
+void tourne(float angleDeg, float vitesse, bool direction){
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+  uint32_t deplacement = abs(angleEnco(angleDeg));
+  float setpoint = abs(ENCODER_Read(GAUCHE));
+  float lastErr;
+  float speed = vitesse;
+  while(deplacement - setpoint > 0) { 
+  
+    
+    if(!direction){
+      MOTOR_SetSpeed(GAUCHE, -1*calculVitesse(vitesse , setpoint, deplacement));
+      MOTOR_SetSpeed(DROITE, calculVitesse(speed, setpoint, deplacement));
+    }
+    else if (direction){
+      MOTOR_SetSpeed(GAUCHE, calculVitesse(vitesse , setpoint, deplacement));
+      MOTOR_SetSpeed(DROITE, -1*calculVitesse(speed, setpoint, deplacement));
+    }
+
+    setpoint = abs(ENCODER_Read(GAUCHE));
+    float real = abs(ENCODER_Read(DROITE));
+    float err = setpoint - real;
+
+    speed = speed + pid(err,lastErr);
+    Serial.println("");
+    lastErr = err;
+   
+  }
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+}
+
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Description : Fait avancer le robot d'une nombre de centimètre
+ *
+ * @param vitesse (float [0 à 0.8]) vitesse des moteur
+ *
+ * @param distanceCM (int) distance du déplacement [cm]
+ *
+ ******************************************************************************************/
+void avance(int distanceCM, float vitesse){
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+  float correction = 0;
+  float deplacement = distanceEnco(distanceCM);
+  float setpoint = ENCODER_Read(GAUCHE);
+  float lastErr = 0;
+  float speedG = vitesse;
+  float speedD = vitesse;
+  while(deplacement - abs(setpoint) > 0){
+
+    speedG = calculVitesse(vitesse , setpoint, deplacement);
+    speedD = calculVitesse(vitesse + correction, setpoint, deplacement) ;
+    setpoint = ENCODER_Read(GAUCHE);
+    float real = ENCODER_Read(DROITE);
+    float err = setpoint - real;
+    correction = correction+pid(err,lastErr);
+    Serial.println("");
+    MOTOR_SetSpeed(GAUCHE, speedG);
+    MOTOR_SetSpeed(DROITE, speedD);
+    lastErr = err;
+  }
+  correction = 0;
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+}
+
+
+/*******************************************************************************************
+ * Auteur : Antoine
+ * 
+ * Description : Fait avancer le robot d'une nombre de centimètre
+ * 
+ * Define : TOUR_COMPLET = 360 deg,   QUART_DE_TOUR = 90 deg
+ *
+ * @param angleDeg (float) angle de rotation
+ * 
+ * @param vitesse (float [0 à 0.8]) vitesse des moteur
+ *
+ * @param direction (bool) direction de rotation: false = GAUCHE, true = DROITE
+ *
+ ******************************************************************************************/
+void tourne(float angleDeg, float vitesse, bool direction){
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+  uint32_t deplacement = abs(angleEnco(angleDeg));
+  float setpoint = abs(ENCODER_Read(GAUCHE));
+  float lastErr;
+  float speed = vitesse;
+  while(deplacement - setpoint > 0) { 
+  
+    
+    if(!direction){
+      MOTOR_SetSpeed(GAUCHE, -1*calculVitesse(vitesse , setpoint, deplacement));
+      MOTOR_SetSpeed(DROITE, calculVitesse(speed, setpoint, deplacement));
+    }
+    else if (direction){
+      MOTOR_SetSpeed(GAUCHE, calculVitesse(vitesse , setpoint, deplacement));
+      MOTOR_SetSpeed(DROITE, -1*calculVitesse(speed, setpoint, deplacement));
+    }
+
+    setpoint = abs(ENCODER_Read(GAUCHE));
+    float real = abs(ENCODER_Read(DROITE));
+    float err = setpoint - real;
+
+    speed = speed + pid(err,lastErr);
+    Serial.println("");
+    lastErr = err;
+   
+  }
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  MOTOR_SetSpeed(0,0);
+  MOTOR_SetSpeed(1,0);
+}
+
+void vitesseRoues(float vitesse1, float vitesse2)
+{
+    MOTOR_SetSpeed(GAUCHE, vitesse1);
+    MOTOR_SetSpeed(DROITE, vitesse2);
 }
 
 void vitesseRoues(float vitesse1, float vitesse2)
