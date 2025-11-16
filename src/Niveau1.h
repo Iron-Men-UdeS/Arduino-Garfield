@@ -32,4 +32,8 @@ void randomDEL();
 void changeRobot(int direction);
 void rouge2();
 void jauneAntoine();
+void malusRouge();
+void bonusVert();
+void gelBleu();
+void bananeJaune();
 #endif
