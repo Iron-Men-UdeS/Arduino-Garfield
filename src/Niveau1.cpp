@@ -73,7 +73,13 @@ clockN=millis();
 if (couleur==COULEURJAUNE&(clockN-clockJ>7000||clockJ==0)){    //Cooldown 
   flagJaune=1;
   clockJ=millis();
+  while(flagJaune==1){
+  digitalWrite(LED_JAUNE,LOW);
+  tourne(720,0.4,DROITE);
+  digitalWrite(LED_JAUNE,HIGH);
+  flagJaune=0;
   }
+}
  else if (couleur!=COULEURJAUNE){flagJaune=0;}
 }
 
@@ -98,6 +104,23 @@ if (couleur==COULEURBLEU&(clockN-clockB>10000||clockB==0)){    //Cooldown
 }
 
 
+/*******************************************************************************************
+ * Auteur : Raphael
+ *
+ * Regarde quels flags des bonus/malus sont ON et allume la DEL durant la durée du flag
+ * 
+ * Jaune pas inclus car dans sa fct
+ * 
+ * Pas de return juste à mettre la fct dans le loop
+******************************************************************************************/
+void delBonus(){
+if(flagBleu==1){digitalWrite(LED_BLEUE,LOW);}
+if(flagRouge==1){digitalWrite(LED_ROUGE,LOW);}
+if(flagVert==1){digitalWrite(LED_VERTE,LOW);}
+if(flagBleu==0){digitalWrite(LED_BLEUE,HIGH);}
+if(flagRouge==0){digitalWrite(LED_ROUGE,HIGH);}
+if(flagVert==0){digitalWrite(LED_VERTE,HIGH);}
+}
 
 /*******************************************************************************************
  * Auteur : Alexandre Dionne

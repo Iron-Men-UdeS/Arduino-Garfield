@@ -36,4 +36,5 @@ void malusRouge();
 void bonusVert();
 void gelBleu();
 void bananeJaune();
+void delBonus();
 #endif
