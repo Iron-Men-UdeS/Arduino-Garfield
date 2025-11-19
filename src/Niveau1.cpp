@@ -72,12 +72,12 @@ clockN=millis();
 
 if (couleur==COULEURJAUNE&(clockN-clockJ>7000||clockJ==0)){    //Cooldown 
   flagJaune=1;
-  clockJ=millis();
   while(flagJaune==1){
   digitalWrite(LED_JAUNE,LOW);
   tourne(720,0.4,DROITE);
   digitalWrite(LED_JAUNE,HIGH);
   flagJaune=0;
+  clockJ=millis();
   }
 }
  else if (couleur!=COULEURJAUNE){flagJaune=0;}
