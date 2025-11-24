@@ -22,19 +22,63 @@ int flagJ = 0;
 int flagS = 0;
 
 int flagBumper=0;
+int couleur=0;
+int flagRouge=0;
+int flagVert=0;
+int flagBleu=0;
+int flagJaune=0;
+int etatJeu=0;
+uint8_t listeLasagne[4];
+uint8_t listeGarfield[4];
+unsigned long clockR=0;
+unsigned long clockV=0;
+unsigned long clockB=0;
+unsigned long clockJ=0;
+unsigned long clockN=0;
 
-int couleur = 0;
-int flagRouge = 0;
-int flagVert = 0;
-int flagBleu = 0;
-int flagJaune = 0;
+//Flags simulant les données du mvmnt
+int distanceX=20;
+int distanceY=720;
 
-unsigned long clockR = 0;
-unsigned long clockV = 0;
-unsigned long clockB = 0;
-unsigned long clockJ = 0;
-unsigned long clockN = 0;
+//Les recu par comm
+int distanceXRecu=0;
+int distanceYRecu=0;
+int flagBleuRecu=0;
+int etatJeuRecu=0;
 
+
+/*******************************************************************************************
+ * Auteur : Raphael
+ *
+ * Crée une liste avec les variables qu'on va communiquer
+ * 
+ * @return Tableau [x,y,gel,état du jeu]
+******************************************************************************************/
+void creationListe(){
+  listeGarfield[0] = distanceX;
+  listeGarfield[1] = distanceY;
+  listeGarfield[2] = flagBleu;
+  listeGarfield[3] = etatJeu;
+}
+
+
+/*******************************************************************************************
+ * Auteur : Raphael
+ *
+ * Définit les variables avec la liste reçu
+ * 
+ * @return distanceXRecu
+ * @return distanceYRecu
+ * @return flagBleuRecu
+ * @return etatJeuRecu
+ * 
+******************************************************************************************/
+void receptionListe(){
+distanceXRecu=listeLasagne[0];
+distanceYRecu=listeLasagne[1];
+flagBleuRecu=listeLasagne[2];
+etatJeuRecu=listeLasagne[3];
+}
 /*******************************************************************************************
  * Auteur : Raphael
  *
@@ -208,12 +252,13 @@ Fonctions de boucle infini (loop())
 **************************************************************************** */
 void loop()
 {
+receptionListe();
 flagBumperSet();
 malusRouge();
 bonusVert();
 gelBleu();
 bananeJaune();
 delBonus();
-
+creationListe();
 }
 
