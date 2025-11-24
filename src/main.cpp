@@ -140,6 +140,7 @@ if(millis()-debutJeu>60000){etatJeu=3;}
 void creationListe(){
     listeGarfield[0] = flagBleu;
     listeGarfield[1] = etatJeu;
+    
 }
 
 
