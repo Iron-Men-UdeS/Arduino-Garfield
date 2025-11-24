@@ -35,17 +35,34 @@ unsigned long clockV=0;
 unsigned long clockB=0;
 unsigned long clockJ=0;
 unsigned long clockN=0;
+unsigned long debutJeu=0;
 
 //Flags simulant les données du mvmnt
-int distanceX=20;
-int distanceY=720;
+int positionX=20;
+int positionY=720;
 
 //Les recu par comm
-int distanceXRecu=0;
-int distanceYRecu=0;
+int positionXRecu=0;
+int positionYRecu=0;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
+/*******************************************************************************************
+ * Auteur : Raphael
+ *
+ * Définit la variable etatJeu
+ * 
+ * 0=Jeu pas débuté
+ * 1=Débuté
+ * 2=Débuté mais bumper ON
+ * 3=Terminé car deux bumper ON
+******************************************************************************************/
+void setEtatJeu(){
+if(positionX!=0 && flagBumper==0){etatJeu=1; debutJeu=millis();}
+if(positionX!=0 && flagBumper==1){etatJeu=2;}
+if(positionX!=0 && flagBumper==1 && etatJeuRecu==2){etatJeu=3;}
+if(millis()-debutJeu>60000){etatJeu=3;}
+}
 
 /*******************************************************************************************
  * Auteur : Raphael
@@ -55,8 +72,8 @@ int etatJeuRecu=0;
  * @return Tableau [x,y,gel,état du jeu]
 ******************************************************************************************/
 void creationListe(){
-  listeGarfield[0] = distanceX;
-  listeGarfield[1] = distanceY;
+  listeGarfield[0] = positionX;
+  listeGarfield[1] = positionY;
   listeGarfield[2] = flagBleu;
   listeGarfield[3] = etatJeu;
 }
@@ -74,8 +91,8 @@ void creationListe(){
  * 
 ******************************************************************************************/
 void receptionListe(){
-distanceXRecu=listeLasagne[0];
-distanceYRecu=listeLasagne[1];
+positionXRecu=listeLasagne[0];
+positionYRecu=listeLasagne[1];
 flagBleuRecu=listeLasagne[2];
 etatJeuRecu=listeLasagne[3];
 }
@@ -222,6 +239,7 @@ void delBonus()
   {
     digitalWrite(LED_VERTE, HIGH);
   }
+  if(etatJeu==3){digitalWrite(LED_BLEUE,LOW);digitalWrite(LED_ROUGE,LOW);digitalWrite(LED_VERTE,LOW);digitalWrite(LED_JAUNE,LOW);while(true){delay(10);}}
 }
 
 
