@@ -2,5 +2,6 @@
     "files.associations": {
         "librobus.h": "c",
         "capteurs.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/rapha/Documents/GitHub/Arduino-Garfield/lib/Adafruit_BusIO"
 }
