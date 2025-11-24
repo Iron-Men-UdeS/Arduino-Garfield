@@ -58,7 +58,8 @@ int etatJeuRecu=0;
  * 3=Terminé car deux bumper ON
 ******************************************************************************************/
 void setEtatJeu(){
-if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==0 ){etatJeu=1; debutJeu=millis();}
+if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==0 && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
+if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==0){etatJeu=1;}
 if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==1){etatJeu=2;}
 if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==1 && etatJeuRecu==2){etatJeu=3;}
 if(millis()-debutJeu>60000){etatJeu=3;}
