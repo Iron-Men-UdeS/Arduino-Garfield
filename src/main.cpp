@@ -25,11 +25,11 @@ int flagBumper=0;
 int couleur=0;
 int flagRouge=0;
 int flagVert=0;
-int flagBleu=0;
+int flagBleu=3;
 int flagJaune=0;
-int etatJeu=0;
+int etatJeu=4;
 uint8_t listeLasagne[4];
-uint8_t listeGarfield[4];
+uint8_t listeGarfield[2];
 unsigned long clockR=0;
 unsigned long clockV=0;
 unsigned long clockB=0;
@@ -103,13 +103,13 @@ void litUART(uint8_t *trame, uint8_t sizeTrame)
 void envoieTrame(uint8_t *trame)
 {
     uint8_t somme;
-    for(int i = 0; i < (sizeof(trame)); i++)
+    for(unsigned int i = 0; i < (sizeof(trame)); i++)
     {
         somme = somme + trame[i];
     }
-    Serial.write(0x24);
-    Serial.write(trame, sizeof(trame));
-    Serial.write(somme);
+    Serial1.write(0x24);
+    Serial1.write(trame, sizeof(trame));
+    Serial1.write(somme);
 }
 
 /*******************************************************************************************
@@ -138,10 +138,8 @@ if(millis()-debutJeu>60000){etatJeu=3;}
  * @return Tableau [x,y,gel,état du jeu]
 ******************************************************************************************/
 void creationListe(){
-  listeGarfield[0] = positionX;
-  listeGarfield[1] = positionY;
-  listeGarfield[2] = flagBleu;
-  listeGarfield[3] = etatJeu;
+    listeGarfield[0] = flagBleu;
+    listeGarfield[1] = etatJeu;
 }
 
 
@@ -318,65 +316,11 @@ void delBonus()
     if(bumpp){flagBumper=1;}
     if(!bumpp){flagBumper=0;}
 }
-/*******************************************************************************************
- * Auteur : Alexandre Dionne
- *
- * Lit une trame sur UART1 et stocke les donnes dans un tableau
- *
- * @param trame (Tableau uint8_t) Addresse du tableau pour la trame recu
- * @param sizeTrame (uint8_t) longueur de la trame a recevoir (+2 pour start et checksum)
- ******************************************************************************************/
-void litUART(uint8_t *trame, uint8_t sizeTrame)
-{
-    int somme = 0;
-    uint8_t temporaire[sizeTrame - 1];
-    int i;
-
-    if (Serial1.available() >= sizeTrame)
-    {
-        Serial1.readBytes(temporaire, 1);
-        if (temporaire[0] == 0x24)
-        {
-            Serial1.readBytes(temporaire, sizeTrame - 1);
-            for (i = 0; i < sizeTrame - 2; i++)
-            {
-                somme = somme + temporaire[i];
-            }
-            if (temporaire[sizeTrame - 2] == somme)
-            {
-                for (i = 0; i < sizeTrame - 2; i++)
-                {
-                    trame[i] = temporaire[i];
-                }
-            }
-        }
-    }
-}
-
-/*******************************************************************************************
- * Auteur : Alexandre Dionne
- *
- * Envoie une trame sur le port UART
- *
- * @param trame (Tableau uint8_t) Trame a evoyer
- ******************************************************************************************/
-void envoieTrame(uint8_t *trame)
-{
-    uint8_t somme;
-    for(int i = 0; i < (sizeof(trame)); i++)
-    {
-        somme = somme + trame[i];
-    }
-    Serial.write(0x24);
-    Serial.write(trame, sizeof(trame));
-    Serial.write(somme);
-}
 
 void setup()
 {
   BoardInit();
-    Serial1.begin(115200);
-    Serial.begin(9600);
+  initUART1();
     pinMode(LED_ROUGE, OUTPUT);
     pinMode(LED_VERTE, OUTPUT);
     pinMode(LED_JAUNE, OUTPUT);
@@ -385,7 +329,7 @@ void setup()
     digitalWrite(LED_VERTE, HIGH);
     digitalWrite(LED_BLEUE, HIGH);
     digitalWrite(LED_ROUGE, HIGH);
-    initUART1();
+    
 }
 
 /* ****************************************************************************
@@ -393,16 +337,21 @@ Fonctions de boucle infini (loop())
 **************************************************************************** */
 void loop()
 {
-litUART(listeLasagne,5);
+ 
+litUART(listeLasagne,6);
 receptionListe();
-flagBumperSet();
-malusRouge();
-bonusVert();
-gelBleu();
-bananeJaune();
-setEtatJeu(); //Doit etre avant delbonus()
-delBonus();
+//flagBumperSet();
+//malusRouge();
+//bonusVert();
+//gelBleu();
+//bananeJaune();
+//setEtatJeu(); //Doit etre avant delbonus()
+//delBonus();
 creationListe();
 envoieTrame(listeGarfield);
+Serial.print(flagBleuRecu);
+Serial.print(etatJeuRecu);
+Serial.print(positionXRecu);
+Serial.print(positionYRecu);
 }
 
