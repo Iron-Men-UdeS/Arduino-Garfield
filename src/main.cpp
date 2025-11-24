@@ -203,6 +203,7 @@ void gelBleu()
     flagBleu = 1;
     clockB = millis();
   }
+  if (flagBleuRecu==1){digitalWrite(LED_BLEUE,LOW);delay(5000);digitalWrite(LED_BLEUE,HIGH);}
 }
 
 /*******************************************************************************************
@@ -216,10 +217,6 @@ void gelBleu()
  ******************************************************************************************/
 void delBonus()
 {
-  if (flagBleu == 1)
-  {
-    digitalWrite(LED_BLEUE, LOW);
-  }
   if (flagRouge == 1)
   {
     digitalWrite(LED_ROUGE, LOW);
@@ -227,10 +224,6 @@ void delBonus()
   if (flagVert == 1)
   {
     digitalWrite(LED_VERTE, LOW);
-  }
-  if (flagBleu == 0)
-  {
-    digitalWrite(LED_BLEUE, HIGH);
   }
   if (flagRouge == 0)
   {
