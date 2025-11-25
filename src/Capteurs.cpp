@@ -8,10 +8,8 @@ int seuilDroite = 875;
 //créer l'objet pour le 6050
 Adafruit_MPU6050 mpu;
 // variables de l'accéléromètre
-double pos_x= POSX_R1;
-double pos_y= POSY_R2;
-double temps= 0;
-double temps_prec= 0;
+double pos_x= 0;
+double pos_y= 0;
 double angle= PI/2; //rechanger à 0 pour faire marcher le code actu_pos4 
 double angle_prec= PI/2; 
 double integ_a[2]= {0,0};
@@ -21,8 +19,6 @@ float vit_prec[2]={0,0};
 float err_accx=0;
 float err_accy=0;//rechanger après
 float err_rot=0;
-double vit1=0;
-double vit2=0;
 double anglef=0;
 double xi1=0; //possible de changer ces valeurs pour changer la position initiale du robot, la roue gauche est à 0 0 au départ
 double xf1=0;
@@ -37,7 +33,7 @@ double cy=0;
 double dep1=0;
 double dep2=0;
 
-double dist=DIST;
+
 double theta1=0;
 double w1=0;
 double c1=0;
@@ -52,6 +48,11 @@ double norv=0;
 double thetav=0;
 
 double vitang=0;
+double dist=DIST;
+double temps= 0;
+double temps_prec= 0;
+double vit1=0;
+double vit2=0;
 
 // Capteur de couleur test
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
@@ -293,7 +294,7 @@ void actu_angle(position& pos){
   vit1=dep1/(temps-temps_prec);
   vit2=dep2/(temps-temps_prec);
   vitang=(vit1-vit2)/dist;
-  if ((abs(vit1/vit2)>0.95&&abs(vit1/vit2)<1.05)||(vit1==0&&vit2==0)){
+  if (vit1==vit2||(vit1==0&&vit2==0)){
     pos.x+=dep1*cos(pos.angle+90);
     pos.y+=dep1*sin(pos.angle+90);
     temps_prec=temps;

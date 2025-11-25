@@ -32,17 +32,24 @@ void loop()
 {
     if(start==1){
         if((t_main-t_init)<=2){
-            vitesseRoues(0.3,0.3);
+            vitesseRoues(-0.3,0.3);
         }
-        if((t_main-t_init)>1 && robot.angle<PI){
+        if((t_main-t_init)>2 && (t_main-t_init)<=4){
+            vitesseRoues(-0.3,-0.2);
+        }
+        if((t_main-t_init)>4 && (t_main-t_init)<6){
             vitesseRoues(0,0.3);
         }
-        if(robot.angle>PI&&robot.y>0){
-            vitesseRoues(0.3,0.3);
+        if((t_main-t_init)>6 && (t_main-t_init)<8){
+            vitesseRoues(0.5,0);
         }
-        if(robot.angle>PI&&robot.y<0){
+        if((t_main-t_init)>8 && (t_main-t_init)<10){
+            vitesseRoues(-0.3,0.3);
+        }
+        if ((t_main-t_init>10)){
             vitesseRoues(0,0);
         }
+
         t_main=get_temps();
         if (t_main>=cooldown){
         // Serial.print("acc x: ");
