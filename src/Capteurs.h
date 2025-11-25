@@ -5,6 +5,8 @@
 #include <Wire.h>
 #include <math.h>
 #include "Adafruit_TCS34725.h"
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
 
 // Defines
 
@@ -39,6 +41,14 @@
 //Capteur de distance
 #define DISTANCEA A2
 #define DISTANCEC A3
+//accéléromètre
+#define POSX_R1 0;
+#define POSY_R2 0;
+#define ERR_ACCX_R1 0.37;
+#define ERR_ACCY_R1 0.2;
+#define ERR_ROT_R1 -4;
+#define DIST 18.75;
+#define CMPT 23.93895
 // Variables
 
 // struct suiveur{
@@ -66,4 +76,16 @@ float detecDistance(int pin);
 float corrDist(int pin, float valeurCapteur);// a remettre
 //float calibreSuiveur(int pin);
 //int lireSuiveur(struct suiveur);
+void mpu_init(int calibration);
+double mpu_lect(int axe, int mode);
+void actu_pos();
+void actu_pos2();
+double get_or();
+double get_pos(int axe);
+double get_temps();
+double mpu_get(int axe, int mode);
+void actu_pos3();
+void actu_pos4();
+void actu_pos5();
+void initialiserTemps();
 #endif
