@@ -44,11 +44,11 @@ float anglePrecedent=90;
 
 //Flags simulant les données du mvmnt
 int positionX=20;
-int positionY=720;
+int positionY=100;
 
 //Les recu par comm
-int positionXRecu=0;
-int positionYRecu=0;
+int positionXRecu=50;
+int positionYRecu=10;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
@@ -81,11 +81,16 @@ anglePrecedent=anglePrecedent-changementAngle;   //Redéfini son angle actuel po
  if(changementAngle<0){bool coteTourne=false;changementAngle=-changementAngle;}
  if(changementAngle>=0){bool coteTourne=true;} //Regarde et tourne dans le coté moins long
 
-tourne(changementAngle,vMax,coteTourne);  //Tourne
+int32_t encodeurInitialGauche=abs(ENCODER_Read(0));
+int32_t encodeurInitialDroite=abs(ENCODER_Read(1));
 
-float moduleDistance=(sqrt((exp(diffX)+exp(diffY))));  //Trouve l'hypothénuse
+uint32_t tickEncondeur=abs(angleEnco(changementAngle));
 
-avance(moduleDistance,vMax);   //Avance la distance
+if(coteTourne){while(ENCODER_Read(0)-encodeurInitialGauche<tickEncondeur){MOTOR_SetSpeed(1,0);}}// Bloquant
+if(!coteTourne){while(ENCODER_Read(1)-encodeurInitialDroite<tickEncondeur){MOTOR_SetSpeed(0,0);}}// Bloquant
+
+MOTOR_SetSpeed(0,vMax);
+MOTOR_SetSpeed(1,vMax);
 }
 
 
@@ -384,8 +389,8 @@ Fonctions de boucle infini (loop())
 void loop()
 {
  
-litUART(listeLasagne,6);
-receptionListe();
+// litUART(listeLasagne,6);
+// receptionListe();
 //flagBumperSet();
 //malusRouge();
 //bonusVert();
@@ -393,13 +398,14 @@ receptionListe();
 //bananeJaune();
 //setEtatJeu(); //Doit etre avant delbonus()
 //delBonus();
-creationListe();
-envoieTrame(listeGarfield);
-Serial.print(flagBleuRecu);
-Serial.print(etatJeuRecu);
-Serial.print(positionXRecu);
-Serial.print(positionYRecu);
+// creationListe();
+// envoieTrame(listeGarfield);
+// Serial.print(flagBleuRecu);
+// Serial.print(etatJeuRecu);
+// Serial.print(positionXRecu);
+// Serial.print(positionYRecu);
 
+algoGarfield();
 
 }
 
