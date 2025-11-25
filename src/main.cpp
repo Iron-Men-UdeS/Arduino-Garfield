@@ -14,6 +14,9 @@ Inclure les librairies de functions que vous voulez utiliser
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
+#define vMaxNormal 0.5
+#define vMaxVert 0.7
+#define vMaxRouge 0.3
 
 int flagR = 0;
 int flagV = 0;
@@ -25,9 +28,9 @@ int flagBumper=0;
 int couleur=0;
 int flagRouge=0;
 int flagVert=0;
-int flagBleu=3;
+int flagBleu=0;
 int flagJaune=0;
-int etatJeu=4;
+int etatJeu=0;
 uint8_t listeLasagne[4];
 uint8_t listeGarfield[2];
 unsigned long clockR=0;
@@ -36,6 +39,8 @@ unsigned long clockB=0;
 unsigned long clockJ=0;
 unsigned long clockN=0;
 unsigned long debutJeu=0;
+
+float anglePrecedent=90;
 
 //Flags simulant les données du mvmnt
 int positionX=20;
@@ -46,6 +51,44 @@ int positionXRecu=0;
 int positionYRecu=0;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
+
+
+/*******************************************************************************************
+ * Auteur : Raphael Bouchard
+ *
+ * Algo robot autonome, Sprint vers  coordonées de Lasagne
+ ******************************************************************************************/
+void algoGarfield(){
+ float vMax;
+ bool coteTourne;
+
+ if(flagVert==flagRouge){float vMax=vMaxNormal;}
+ if(flagVert==1 && flagRouge==0){float vMax=vMaxVert;}
+ if(flagVert==0 && flagRouge==1){float vMax=vMaxRouge;}        //Défini la vitesse selon bonus/malus
+
+ float diffX=positionXRecu-positionX;
+ float diffY=positionYRecu-positionY;                  //Définit les différences de positions
+
+ float anglePoursuite=atan2(diffY,diffX);
+ anglePoursuite=(anglePoursuite*(180/PI));                   //Trouve l'angle de l'autre robot par rapport à lui en degré
+
+float changementAngle=anglePrecedent-anglePoursuite;  //Trouve combien il faut qu'il tourne
+
+if(changementAngle>180){changementAngle=(360-changementAngle)*-1;}// transforme angle>180 à angle négatif
+
+anglePrecedent=anglePrecedent-changementAngle;   //Redéfini son angle actuel pour la prochaine boucle
+
+ if(changementAngle<0){bool coteTourne=false;changementAngle=-changementAngle;}
+ if(changementAngle>=0){bool coteTourne=true;} //Regarde et tourne dans le coté moins long
+
+tourne(changementAngle,vMax,coteTourne);  //Tourne
+
+float moduleDistance=(sqrt((exp(diffX)+exp(diffY))));  //Trouve l'hypothénuse
+
+avance(moduleDistance,vMax);   //Avance la distance
+}
+
+
 
 /*******************************************************************************************
  * Auteur : Alexandre Dionne
@@ -320,12 +363,14 @@ void delBonus()
 
 void setup()
 {
-  BoardInit();
-  initUART1();
+    BoardInit();
+    initUART1();
+ 
     pinMode(LED_ROUGE, OUTPUT);
     pinMode(LED_VERTE, OUTPUT);
     pinMode(LED_JAUNE, OUTPUT);
     pinMode(LED_BLEUE, OUTPUT);
+
     digitalWrite(LED_JAUNE, HIGH);
     digitalWrite(LED_VERTE, HIGH);
     digitalWrite(LED_BLEUE, HIGH);
@@ -354,5 +399,7 @@ Serial.print(flagBleuRecu);
 Serial.print(etatJeuRecu);
 Serial.print(positionXRecu);
 Serial.print(positionYRecu);
+
+
 }
 
