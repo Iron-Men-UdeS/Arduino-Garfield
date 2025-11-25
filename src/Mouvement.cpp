@@ -1,5 +1,7 @@
 #include "Mouvement.h"
 
+
+
 /*******************************************************************************************
  * Auteur : Antoine
  * 
@@ -19,6 +21,10 @@ uint32_t distanceEnco(float distanceCM)
 {
     uint32_t val = (TOUR_COMPLET_ENCO / CIRCON_ROUE_CM) * distanceCM;
     return val;
+}
+
+double encoToCM(float distanceEnco){
+  return distanceEnco * (CIRCON_ROUE_CM/TOUR_COMPLET_ENCO);
 }
 
 /*******************************************************************************************
@@ -297,3 +303,62 @@ void vitesseRoues(float vitesse1, float vitesse2)
     MOTOR_SetSpeed(GAUCHE, vitesse1);
     MOTOR_SetSpeed(DROITE, vitesse2);
 }
+
+
+
+
+
+
+double angleArc(int encodeur){ 
+  return encoToCM(encodeur)/DIST_ROUE;
+}
+
+double normeDeplacement(double angle){//mettre angleArc(ENCODEUR_READ())
+  return 2*DIST_ROUE*cos(angle/2);//correspond a C
+}
+
+double angleDeplacement(double angle){//mettre angleArc(ENCODEUR_READ())
+  return (180 - angle)/2;//correspond a omega
+}
+
+
+
+void positionRobot(vecteur& positionRobot, double gyro){
+ // double arcR0 = angleArc(ENCODER_ReadReset(0));
+  double arcR0 = angleArc(distanceEnco(10));
+  //double arcR1 = angleArc(ENCODER_ReadReset(1));
+  double arcR1 = angleArc(distanceEnco(10));
+  
+  //vecteur de la roue 1
+  double normeR0 = normeDeplacement(arcR0);
+  double angleR0 = angleDeplacement(arcR0);
+  //composants roue 1
+  double x_R0 = normeR0 *cos(angleR0);
+  double y_R0 = normeR0 *sin(angleR0);
+  
+  //vecteur de la roue 2
+  double normeR1 = normeDeplacement(arcR1);
+  double angleR1 = angleDeplacement(arcR1);
+  //composants roue 2
+  double x_R1 = normeR1 *cos(angleR1);
+  double y_R1 = normeR1 *sin(angleR1);
+
+  //composant total
+  double x;
+  // if(x_R0 - x_R1 < 0.5&& x_R0 - x_R1 > -0.5 ){
+  //   x = x_R0 - x_R1;
+  // }
+  x = (x_R0 - x_R1);
+  double y = (y_R0 + y_R1);
+
+  //composant ajustés avec l'orientation du robot
+  double xAjust = x;//(x*cos(gyro)) + (y*sin(gyro));
+  double yAjust = y;//(-x*sin(gyro)) + (y*cos(gyro));
+  positionRobot.x = xAjust;
+  positionRobot.y = yAjust;
+  positionRobot.angle = atan2(positionRobot.y,positionRobot.x);
+  positionRobot.norme =sqrt((positionRobot.x *positionRobot.x) + (positionRobot.y * positionRobot.y));
+}
+
+
+
