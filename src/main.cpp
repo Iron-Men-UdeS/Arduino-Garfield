@@ -19,10 +19,11 @@ double t_main=0;
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
+position robot;
 void setup()
 {
     BoardInit();
-    mpu_init(0);
+    //mpu_init(0);
 }
 /* ****************************************************************************
 Fonctions de boucle infini (loop())
@@ -30,13 +31,16 @@ Fonctions de boucle infini (loop())
 void loop()
 {
     if(start==1){
-        if(t_main-t_init<=1){
+        if((t_main-t_init)<=2){
             vitesseRoues(0.3,0.3);
         }
-        if(t_main-t_init>1&&t_main-t_init<=2){
-            vitesseRoues(0.0,0.0);
+        if((t_main-t_init)>1 && robot.angle<PI){
+            vitesseRoues(0,0.3);
         }
-        if(t_main-t_init>2){
+        if(robot.angle>PI&&robot.y>0){
+            vitesseRoues(0.3,0.3);
+        }
+        if(robot.angle>PI&&robot.y<0){
             vitesseRoues(0,0);
         }
         t_main=get_temps();
@@ -50,10 +54,10 @@ void loop()
         // Serial.print("\n");
         // Serial.print("rot z:");
         // Serial.println(mpu_get(2,1));
-        Serial.print("position x: ");
-        Serial.println(get_pos(0));
-        Serial.print("position y: ");
-        Serial.println(get_pos(1));
+        //Serial.print("position x: ");
+        //Serial.println(get_pos(0));
+        //Serial.print("position y: ");
+        //Serial.println(get_pos(1));
         // Serial.print("orientation: ");
         // Serial.println(get_or());
         // Serial.print("temps: ");
@@ -62,7 +66,7 @@ void loop()
 
         cooldown+=1;
         }
-        actu_pos5();
+        actu_angle(robot);
 }
     if (ROBUS_IsBumper(0)==true&&start==0){
         start=1;

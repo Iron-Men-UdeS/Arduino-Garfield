@@ -59,6 +59,12 @@
 //   int readCentre,readDroite,readGauche;
 // };
 
+struct position{
+  double x = 0;
+  double y = 0;
+  double angle = 0;
+};
+
 // //Prototypes de fonctions
 int calibrerGauche(void);
 int calibreCentre(void);
@@ -87,5 +93,6 @@ double mpu_get(int axe, int mode);
 void actu_pos3();
 void actu_pos4();
 void actu_pos5();
+void actu_angle(position& pos);
 void initialiserTemps();
 #endif

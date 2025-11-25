@@ -51,6 +51,8 @@ double vmy=0;
 double norv=0;
 double thetav=0;
 
+double vitang=0;
+
 // Capteur de couleur test
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_101MS, TCS34725_GAIN_4X); // Définit capteur et caractéristiques d'utilisation
 
@@ -248,26 +250,80 @@ void actu_pos4(){ //écrire à justin si vous avez besoin d'aide
 }
 void actu_pos5(){
   temps=millis()/1000;
+  angle +=(mpu_get(2,1))*(temps-temps_prec);
   dep1= (double) ENCODER_ReadReset(0)*CMPT/3200;
   dep2= (double) ENCODER_ReadReset(1)*CMPT/3200;
   theta1=dep1/dist;
   theta2=dep2/dist;
-  c1=2*dist*cos(theta1/2);
-  c2=2*dist*cos(theta1/2);
+  c1=2*dist*sin(theta1/2);
+  c2=2*dist*sin(theta1/2);
   w1=(PI-theta1)/2;
   w2=(PI-theta2)/2;
   vmx=(c1*cos(w1))-(c2*cos(w2));
   vmy=(c1*sin(w1)+(c2*sin(w2)));
   norv=sqrt(pow(vmx,2)+pow(vmy,2));
-  thetav=atan(vmy/vmx);
-  if(vmx<0){
-    thetav*=-1;
+  if(vmy>0&&vmx==0){
+    thetav=PI/2;
+  }
+  else if(vmy<0&&vmx==0){
+    thetav=3*PI/2;
+  }
+  else if(vmx==0){
+    thetav=0;
+  }
+  else{
+    thetav=atan(vmy/vmx);
+    if(vmx<0){
+      thetav*=-1;
+    } 
   }
   pos_x+=norv*cos(angle-(PI/2)+thetav);
-  pos_y+=norv*cos(angle-(PI/2)+thetav);
-  angle=angle-PI/2+thetav;
-  Serial.println(c1*cos(w1));
-  Serial.println(c2*cos(w2));
+  pos_y+=norv*sin(angle-(PI/2)+thetav);
+  angle_prec=angle;
+  temps_prec=temps;
+  Serial.println(pos_x);
+  Serial.println(pos_y);
+}
+
+
+void actu_angle(position& pos){
+  temps=((double)millis())/1000;
+  dep1= (double) ENCODER_ReadReset(0)*CMPT/3200;
+  dep2= (double) ENCODER_ReadReset(1)*CMPT/3200;
+  vit1=dep1/(temps-temps_prec);
+  vit2=dep2/(temps-temps_prec);
+  vitang=(vit1-vit2)/dist;
+  if ((abs(vit1/vit2)>0.95&&abs(vit1/vit2)<1.05)||(vit1==0&&vit2==0)){
+    pos.x+=dep1*cos(pos.angle+90);
+    pos.y+=dep1*sin(pos.angle+90);
+    temps_prec=temps;
+  }
+  else{
+      double r= (dist*(vit2+vit1))/(2*(vit2-vit1));
+      cx= pos.x - (r*cos(pos.angle));
+      cy= pos.y - (r*sin(pos.angle));
+      Serial.println("vit1");
+      Serial.println(vit1);
+      Serial.println("vit2");
+      Serial.println(vit2);
+      Serial.println("rayon :");
+      Serial.println(r);
+      Serial.println("angle:");
+      Serial.println(pos.angle);
+      Serial.println("centre x:");
+      Serial.println(cx);
+      Serial.println("centre y:");
+      Serial.println(cy);
+  
+    pos.angle-=vitang*(temps-temps_prec);
+
+    pos.x = cx + (r*cos(pos.angle));
+    pos.y = cy + (r*sin(pos.angle));
+  
+    temps_prec=temps;
+    Serial.println(pos.x);
+    Serial.println(pos.y);
+  }
 }
 /*******************************************************************************************
  * Auteur : Justin
@@ -342,7 +398,7 @@ void mpu_init(int calibration){
     Serial.println("+-16G");
     break;
   }
-  mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
   Serial.print("Gyro range set to: ");
   switch (mpu.getGyroRange()) {
   case MPU6050_RANGE_250_DEG:
@@ -401,8 +457,8 @@ void initialiserTemps(){
   temps_prec=millis()/1000;
   pos_x=0;
   pos_y=0;
-  angle=0;
-  angle_prec=0;
+  angle=PI/2;
+  angle_prec=PI/2;
   acc[1]=0;
   vit_prec[1]=0;
 }
