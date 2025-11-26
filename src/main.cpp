@@ -15,7 +15,7 @@ Inclure les librairies de functions que vous voulez utiliser
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
-#define vMaxNormal 0.5
+#define vMaxNormal 0.3
 #define vMaxVert 0.7
 #define vMaxRouge 0.3
 #define DIST 18.75
@@ -55,8 +55,8 @@ double positionX=0;
 double positionY=0;
 
 //Les recu par comm
-int positionXRecu=50;
-int positionYRecu=10;
+int positionXRecu=30;
+int positionYRecu=50;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
@@ -72,46 +72,70 @@ double cy=0;
 double dep1=0;
 double dep2=0;
 
+int encoder_prec1=0;
+int encoder_prec2=0;
 
 
 
 void actu_angle(position& pos){
-  temps=((double)millis())/1000;
-  dep1= (double) ENCODER_ReadReset(0)*CMPT/3200;
-  dep2= (double) ENCODER_ReadReset(1)*CMPT/3200;
-  vit1=dep1/(temps-temps_prec);
-  vit2=dep2/(temps-temps_prec);
+  temps=((double) millis())/1000;
+  dep1= ((double) ENCODER_ReadReset(0))*CMPT/3200;
+  dep2= ((double) ENCODER_ReadReset(1))*CMPT/3200;
+  if(temps==temps_prec){vit1=0;vit2=0;}
+  else{vit1=dep1/(temps-temps_prec);
+  vit2=dep2/(temps-temps_prec);}
   vitang=(vit1-vit2)/dist;
-  if ((abs(vit1/vit2)>0.95&&abs(vit1/vit2)<1.05)||(vit1==0&&vit2==0)){
-    pos.x+=dep1*cos(pos.angle+90);
-    pos.y+=dep1*sin(pos.angle+90);
+  if ((vit1==vit2)||(dep1==0&&dep2==0)){
+    pos.x+=dep1*cos(pos.angle+(PI/2));
+    pos.y+=dep1*sin(pos.angle+(PI/2));
     temps_prec=temps;
+    encoder_prec1=ENCODER_Read(0);
+    encoder_prec2=ENCODER_Read(1);
   }
   else{
       double r= (dist*(vit2+vit1))/(2*(vit2-vit1));
       cx= pos.x - (r*cos(pos.angle));
       cy= pos.y - (r*sin(pos.angle));
-      // Serial.println("vit1");
-      // Serial.println(vit1);
-      // Serial.println("vit2");
-      // Serial.println(vit2);
-      // Serial.println("rayon :");
-      // Serial.println(r);
-      // Serial.println("angle:");
-      // Serial.println(pos.angle);
-      // Serial.println("centre x:");
-      // Serial.println(cx);
-      // Serial.println("centre y:");
-      // Serial.println(cy);
-  
-    pos.angle-=vitang*(temps-temps_prec);
+    //   Serial.println("vitang");
+    //   Serial.println(vitang);
+    //   Serial.println("dep1");
+    //   Serial.println(dep1);
+    //   Serial.println("dep2");
+    //   Serial.println(dep2);
+    //   Serial.println("vit1");
+    //   Serial.println(vit1);
+    //   Serial.println("vit2");
+    //   Serial.println(vit2);
+    // //   Serial.println("rayon :");
+    // //   Serial.println(r);
+    //   Serial.println("angle:");
+    //   Serial.println(pos.angle);
+    //   Serial.println("centre x:");
+    //   Serial.println(cx);
+    //   Serial.println("centre y:");
+    //   Serial.println(cy);
+//           Serial.println("dep1");
+//     Serial.println(dep1);
+//           Serial.println("dep2");
+//     Serial.println(dep2);
+//   Serial.println("temps");
+//   Serial.println(temps);
+//   Serial.println("tempsPrec");
+//   Serial.println(temps_prec);
+// //     Serial.println("millis");
+//   Serial.println(millis());
+    pos.angle-=vitang*(temps-temps_prec);  
 
     pos.x = cx + (r*cos(pos.angle));
     pos.y = cy + (r*sin(pos.angle));
   
     temps_prec=temps;
+    encoder_prec1=ENCODER_Read(0);
+    encoder_prec2=ENCODER_Read(1);
     Serial.println(pos.x);
     Serial.println(pos.y);
+  positionX=robot.x;
+  positionY=robot.y;
   }
 }
 
@@ -132,19 +156,22 @@ void algoGarfield(){
  float diffY=positionYRecu-positionY;                  //Définit les différences de positions
 
  float anglePoursuite=atan2(diffY,diffX);
- anglePoursuite=(anglePoursuite*(180/PI));                   //Trouve l'angle de l'autre robot par rapport à lui en degré
+Serial.println("Angle de poursuite");
+Serial.println(anglePoursuite);
 
-float changementAngle=anglePrecedent-anglePoursuite;  //Trouve combien il faut qu'il tourne
 
-if(changementAngle>180){changementAngle=(360-changementAngle)*-1;}// transforme angle>180 à angle négatif
-
-anglePrecedent=anglePrecedent-changementAngle;   //Redéfini son angle actuel pour la prochaine boucle
+float changementAngle=(robot.angle+(PI/2))-anglePoursuite;  //Trouve combien il faut qu'il tourne
+Serial.println("Angle changment");
+Serial.println(changementAngle);
+Serial.println("Angle now");
+Serial.println(robot.angle+(PI/2));
+if(changementAngle>180){changementAngle=((2*PI)-changementAngle)*-1;}// transforme angle>180 à angle négatif
 
  if(changementAngle<0){bool coteTourne=false;changementAngle=-changementAngle;}
  if(changementAngle>=0){bool coteTourne=true;} //Regarde et tourne dans le coté moins long
-
-MOTOR_SetSpeed(0,vMax);
-MOTOR_SetSpeed(1,vMax);
+if(diffX<30&&diffY<30){MOTOR_SetSpeed(0,0);MOTOR_SetSpeed(1,0);}
+if(diffX>30 || diffY>30){MOTOR_SetSpeed(0,vMax);
+MOTOR_SetSpeed(1,vMax);}
 
 uint32_t encodeurInitialGauche=abs(ENCODER_Read(0));
 uint32_t encodeurInitialDroite=abs(ENCODER_Read(1));
@@ -152,13 +179,27 @@ uint32_t encodeurInitialDroite=abs(ENCODER_Read(1));
 uint32_t tickEncondeur=abs(angleEnco(changementAngle));
 
 
-if(coteTourne){while(robot.angle){MOTOR_SetSpeed(1,0);}}// Bloquant
-if(!coteTourne){while(ENCODER_Read(1)-encodeurInitialDroite<tickEncondeur){MOTOR_SetSpeed(0,0);}}// Bloquant
+if(coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(1,0);}}// Bloquant
+if(!coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(0,0);}}// Bloquant
 
 if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
+void tournejusqua(float angle){
+  if((robot.angle+PI/2)>angle+PI/16){
+    vitesseRoues(0.3,-0.3);
+  }
+  if((robot.angle+PI/2)<angle-PI/16){
+    vitesseRoues(-0.3,0.3);
+  }
 
+}
+float angledepoursuite(float positionXRecu, float positionYRecu, float positionX, float positionY){
+  float diffX=positionXRecu-positionX;
+  float diffY=positionYRecu-positionY;                  //Définit les différences de positions
 
+  float anglePoursuite=atan2(diffY,diffX);
+  return anglePoursuite;
+}
 
 /*******************************************************************************************
  * Auteur : Alexandre Dionne
@@ -455,22 +496,28 @@ void setup()
 /* ****************************************************************************
 Fonctions de boucle infini (loop())
 **************************************************************************** */
+float anglePoursuite=0;
 void loop()
 {
-actu_angle(robot); 
-litUART(listeLasagne,6);
-receptionListe();
-flagBumperSet();
-malusRouge();
-bonusVert();
-gelBleu();
-bananeJaune();
-setEtatJeu(); //Doit etre avant delbonus()
-delBonus();
-creationListe();
-envoieTrame(listeGarfield);
-if(millis()-lastTime>2000|| lastTime==0){algoGarfield();lastTime=millis();}
-Serial.println("flagBumper");
-Serial.println(flagBumper);
+  anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
+  tournejusqua(anglePoursuite);
+  actu_angle(robot); 
+  Serial.println("angle robot");
+  Serial.println(robot.angle);
+  Serial.println("angle poursuite");
+  Serial.println(anglePoursuite);
+
+// litUART(listeLasagne,6);
+// receptionListe();
+// flagBumperSet();
+// malusRouge();
+// bonusVert();
+// gelBleu();
+// bananeJaune();
+// setEtatJeu(); //Doit etre avant delbonus()
+// delBonus();
+// creationListe();
+// envoieTrame(listeGarfield);
+//if(millis()-lastTime>2000|| lastTime==0){algoGarfield();lastTime=millis();}
 }
 
