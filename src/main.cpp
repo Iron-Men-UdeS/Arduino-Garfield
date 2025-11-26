@@ -11,12 +11,16 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "Capteurs.h"
 #include "Mouvement.h"
 #include "Niveau1.h"
+#include "main.h"
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
 #define vMaxNormal 0.5
 #define vMaxVert 0.7
 #define vMaxRouge 0.3
+#define DIST 18.75
+#define CMPT 23.93895
+
 
 int flagR = 0;
 int flagV = 0;
@@ -24,6 +28,8 @@ int flagB = 0;
 int flagJ = 0;
 int flagS = 0;
 
+int lastTime=0;
+unsigned long tempsBumpp=0;
 int flagBumper=0;
 int couleur=0;
 int flagRouge=0;
@@ -42,9 +48,11 @@ unsigned long debutJeu=0;
 
 float anglePrecedent=90;
 
+position robot;
+
 //Flags simulant les données du mvmnt
-int positionX=20;
-int positionY=100;
+double positionX=0;
+double positionY=0;
 
 //Les recu par comm
 int positionXRecu=50;
@@ -52,6 +60,60 @@ int positionYRecu=10;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
+double vitang=0;
+double dist=DIST;
+double temps= 0;
+double temps_prec= 0;
+double vit1=0;
+double vit2=0;
+ 
+double cx=0;
+double cy=0;
+double dep1=0;
+double dep2=0;
+
+
+
+
+void actu_angle(position& pos){
+  temps=((double)millis())/1000;
+  dep1= (double) ENCODER_ReadReset(0)*CMPT/3200;
+  dep2= (double) ENCODER_ReadReset(1)*CMPT/3200;
+  vit1=dep1/(temps-temps_prec);
+  vit2=dep2/(temps-temps_prec);
+  vitang=(vit1-vit2)/dist;
+  if ((abs(vit1/vit2)>0.95&&abs(vit1/vit2)<1.05)||(vit1==0&&vit2==0)){
+    pos.x+=dep1*cos(pos.angle+90);
+    pos.y+=dep1*sin(pos.angle+90);
+    temps_prec=temps;
+  }
+  else{
+      double r= (dist*(vit2+vit1))/(2*(vit2-vit1));
+      cx= pos.x - (r*cos(pos.angle));
+      cy= pos.y - (r*sin(pos.angle));
+      // Serial.println("vit1");
+      // Serial.println(vit1);
+      // Serial.println("vit2");
+      // Serial.println(vit2);
+      // Serial.println("rayon :");
+      // Serial.println(r);
+      // Serial.println("angle:");
+      // Serial.println(pos.angle);
+      // Serial.println("centre x:");
+      // Serial.println(cx);
+      // Serial.println("centre y:");
+      // Serial.println(cy);
+  
+    pos.angle-=vitang*(temps-temps_prec);
+
+    pos.x = cx + (r*cos(pos.angle));
+    pos.y = cy + (r*sin(pos.angle));
+  
+    temps_prec=temps;
+    Serial.println(pos.x);
+    Serial.println(pos.y);
+  }
+}
 
 /*******************************************************************************************
  * Auteur : Raphael Bouchard
@@ -59,12 +121,12 @@ int etatJeuRecu=0;
  * Algo robot autonome, Sprint vers  coordonées de Lasagne
  ******************************************************************************************/
 void algoGarfield(){
- float vMax;
- bool coteTourne;
+ float vMax=0;
+ bool coteTourne=true;
 
- if(flagVert==flagRouge){float vMax=vMaxNormal;}
- if(flagVert==1 && flagRouge==0){float vMax=vMaxVert;}
- if(flagVert==0 && flagRouge==1){float vMax=vMaxRouge;}        //Défini la vitesse selon bonus/malus
+ if(flagVert==flagRouge){vMax=vMaxNormal;}
+ if(flagVert==1 && flagRouge==0){vMax=vMaxVert;}
+ if(flagVert==0 && flagRouge==1){vMax=vMaxRouge;}        //Défini la vitesse selon bonus/malus
 
  float diffX=positionXRecu-positionX;
  float diffY=positionYRecu-positionY;                  //Définit les différences de positions
@@ -81,16 +143,19 @@ anglePrecedent=anglePrecedent-changementAngle;   //Redéfini son angle actuel po
  if(changementAngle<0){bool coteTourne=false;changementAngle=-changementAngle;}
  if(changementAngle>=0){bool coteTourne=true;} //Regarde et tourne dans le coté moins long
 
-int32_t encodeurInitialGauche=abs(ENCODER_Read(0));
-int32_t encodeurInitialDroite=abs(ENCODER_Read(1));
+MOTOR_SetSpeed(0,vMax);
+MOTOR_SetSpeed(1,vMax);
+
+uint32_t encodeurInitialGauche=abs(ENCODER_Read(0));
+uint32_t encodeurInitialDroite=abs(ENCODER_Read(1));
 
 uint32_t tickEncondeur=abs(angleEnco(changementAngle));
 
-if(coteTourne){while(ENCODER_Read(0)-encodeurInitialGauche<tickEncondeur){MOTOR_SetSpeed(1,0);}}// Bloquant
+
+if(coteTourne){while(robot.angle){MOTOR_SetSpeed(1,0);}}// Bloquant
 if(!coteTourne){while(ENCODER_Read(1)-encodeurInitialDroite<tickEncondeur){MOTOR_SetSpeed(0,0);}}// Bloquant
 
-MOTOR_SetSpeed(0,vMax);
-MOTOR_SetSpeed(1,vMax);
+if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
 
 
@@ -208,6 +273,9 @@ positionXRecu=listeLasagne[0];
 positionYRecu=listeLasagne[1];
 flagBleuRecu=listeLasagne[2];
 etatJeuRecu=listeLasagne[3];
+positionX=robot.x;
+positionY=robot.y;
+
 }
 /*******************************************************************************************
  * Auteur : Raphael
@@ -357,14 +425,15 @@ void delBonus()
  * Défini flagBumper à 1 si un bumper est ON
  ******************************************************************************************/
   void flagBumperSet(){
-    bool bumpp=false;
+    if(flagBumper==1&&millis()-tempsBumpp<5000){flagBumper=1;}
+    if(flagBumper==0 || millis()-tempsBumpp>5000){bool bumpp=false;
     if(ROBUS_IsBumper(0)){bumpp=true;}
   if(ROBUS_IsBumper(1)){bumpp=true;}
   if(ROBUS_IsBumper(2)){bumpp=true;}
   if(ROBUS_IsBumper(3)){bumpp=true;}
-    if(bumpp){flagBumper=1;}
+    if(bumpp){flagBumper=1;float tempsBumpp=millis();}
     if(!bumpp){flagBumper=0;}
-}
+}}
 
 void setup()
 {
@@ -388,7 +457,7 @@ Fonctions de boucle infini (loop())
 **************************************************************************** */
 void loop()
 {
- 
+actu_angle(robot); 
 litUART(listeLasagne,6);
 receptionListe();
 flagBumperSet();
@@ -400,7 +469,8 @@ setEtatJeu(); //Doit etre avant delbonus()
 delBonus();
 creationListe();
 envoieTrame(listeGarfield);
-algoGarfield();
-
+if(millis()-lastTime>2000|| lastTime==0){algoGarfield();lastTime=millis();}
+Serial.println("flagBumper");
+Serial.println(flagBumper);
 }
 
