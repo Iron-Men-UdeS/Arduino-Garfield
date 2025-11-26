@@ -389,22 +389,17 @@ Fonctions de boucle infini (loop())
 void loop()
 {
  
-// litUART(listeLasagne,6);
-// receptionListe();
-//flagBumperSet();
-//malusRouge();
-//bonusVert();
-//gelBleu();
-//bananeJaune();
-//setEtatJeu(); //Doit etre avant delbonus()
-//delBonus();
-// creationListe();
-// envoieTrame(listeGarfield);
-// Serial.print(flagBleuRecu);
-// Serial.print(etatJeuRecu);
-// Serial.print(positionXRecu);
-// Serial.print(positionYRecu);
-
+litUART(listeLasagne,6);
+receptionListe();
+flagBumperSet();
+malusRouge();
+bonusVert();
+gelBleu();
+bananeJaune();
+setEtatJeu(); //Doit etre avant delbonus()
+delBonus();
+creationListe();
+envoieTrame(listeGarfield);
 algoGarfield();
 
 }
