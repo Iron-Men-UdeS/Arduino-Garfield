@@ -13,8 +13,8 @@ Inclure les librairies de functions que vous voulez utiliser
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
-uint8_t trame[6] = {0,0,0,0,0,0};
-
+uint8_t tabGarfield[2] = {5,6};
+uint8_t tabLasagne[4] = {33,33,33,33};
 void setup()
 {
     initUART1();
@@ -26,11 +26,17 @@ Fonctions de boucle infini (loop())
 **************************************************************************** */
 void loop()
 {
-    litUART(trame, 6);
-    Serial.print(trame[0]);
-    Serial.print(trame[1]);
-    Serial.print(trame[2]);
-    Serial.print(trame[3]);
-    Serial.println(trame[4]);
+    envoieTrame(tabGarfield);
+    delay(100);
+    if(litUART(tabLasagne, 6))
+    {
+        Serial.print(tabLasagne[0]);
+        Serial.print(tabLasagne[1]);
+        Serial.print(tabLasagne[2]);
+        Serial.print(tabLasagne[3]);
+    }
+    // Serial.print(trame[2]);
+    // Serial.print(trame[3]);
+    // Serial.println(trame[4]);
 }
 

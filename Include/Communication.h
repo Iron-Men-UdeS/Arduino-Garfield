@@ -3,7 +3,8 @@
 
 #include <Arduino.h>
 
-    void litUART(uint8_t *trame, uint8_t sizeTrame);
-    void initUART1(void);
+void initUART1(void);
+bool litUART(uint8_t *trame, uint8_t sizeTrame);
+void envoieTrame(uint8_t *trame);
 
 #endif
