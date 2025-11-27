@@ -55,7 +55,7 @@ double positionX=0;
 double positionY=0;
 
 //Les recu par comm
-int positionXRecu=30;
+int positionXRecu=50;
 int positionYRecu=50;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
@@ -129,14 +129,15 @@ void actu_angle(position& pos){
     pos.x = cx + (r*cos(pos.angle));
     pos.y = cy + (r*sin(pos.angle));
   
+positionX=cx + (r*cos(pos.angle));
+positionY=cy + (r*sin(pos.angle));
+
     temps_prec=temps;
     encoder_prec1=ENCODER_Read(0);
     encoder_prec2=ENCODER_Read(1);
     Serial.println(pos.x);
     Serial.println(pos.y);
-  positionX=robot.x;
-  positionY=robot.y;
-  }
+    }
 }
 
 /*******************************************************************************************
@@ -185,17 +186,23 @@ if(!coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(0,0);
 if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
 void tournejusqua(float angle){
-  if((robot.angle+PI/2)>angle+PI/16){
+  if(!((robot.angle+PI/2)<angle+PI/8 && ((robot.angle+PI/2)>angle-PI/8))){
+  if((robot.angle+PI/2)>angle+PI/8){
     vitesseRoues(0.3,-0.3);
-  }
-  if((robot.angle+PI/2)<angle-PI/16){
+  }  
+  if((robot.angle+PI/2)<angle-PI/8){
     vitesseRoues(-0.3,0.3);
   }
-
+ 
+}else {vitesseRoues(vMaxNormal, vMaxNormal);}
 }
 float angledepoursuite(float positionXRecu, float positionYRecu, float positionX, float positionY){
+    
+  
   float diffX=positionXRecu-positionX;
   float diffY=positionYRecu-positionY;                  //Définit les différences de positions
+
+
 
   float anglePoursuite=atan2(diffY,diffX);
   return anglePoursuite;
@@ -506,6 +513,10 @@ void loop()
   Serial.println(robot.angle);
   Serial.println("angle poursuite");
   Serial.println(anglePoursuite);
+  Serial.println("positionX");
+  Serial.println(positionX);
+  Serial.println("positionY");
+  Serial.println(positionY);
 
 // litUART(listeLasagne,6);
 // receptionListe();
