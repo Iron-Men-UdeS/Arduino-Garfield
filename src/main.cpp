@@ -27,7 +27,7 @@ int flagV = 0;
 int flagB = 0;
 int flagJ = 0;
 int flagS = 0;
-
+float vMax=0;
 int lastTime=0;
 unsigned long tempsBumpp=0;
 int flagBumper=0;
@@ -195,7 +195,6 @@ void tournejusqua(float angle){
   }
  
 }else { 
-float vMax=0;
 if(flagVert==flagRouge){ vMax=vMaxNormal;}
  if(flagVert==1 && flagRouge==0){ vMax=vMaxVert;}
  if(flagVert==0 && flagRouge==1){ vMax=vMaxRouge;} 
@@ -436,7 +435,7 @@ void gelBleu()
     flagBleu = 1;
     clockB = millis();
   }
-  if (flagBleuRecu==1){digitalWrite(LED_BLEUE,LOW);delay(5000);digitalWrite(LED_BLEUE,HIGH);}
+  if (flagBleuRecu==1){digitalWrite(LED_BLEUE,LOW);vitesseRoues(0,0);(5000);vitesseRoues(vMax,vMax);(LED_BLEUE,HIGH);}
 }
 
 /*******************************************************************************************
