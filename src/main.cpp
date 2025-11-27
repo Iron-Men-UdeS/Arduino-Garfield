@@ -21,7 +21,7 @@ Fonctions d'initialisation (setup)
 #define DIST 18.75
 #define CMPT 23.93895
 
-
+float angleInitial=0;
 int flagR = 0;
 int flagV = 0;
 int flagB = 0;
@@ -54,9 +54,12 @@ position robot;
 double positionX=0;
 double positionY=0;
 
+
+float tempsBleu=-10000;
+
 //Les recu par comm
-int positionXRecu=-45;
-int positionYRecu=90;
+int positionXRecu=-0;
+int positionYRecu=0;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
@@ -129,14 +132,17 @@ void actu_angle(position& pos){
     pos.x = cx + (r*cos(pos.angle));
     pos.y = cy + (r*sin(pos.angle));
   
-positionX=cx + (r*cos(pos.angle));
-positionY=cy + (r*sin(pos.angle));
+positionX=(cx + (r*cos(pos.angle))+16);
+positionY=(cy + (r*sin(pos.angle))+20);
+
+if(pos.angle>(2*PI)){pos.angle=pos.angle-(2*PI);}
+if(pos.angle<(-2*PI)){pos.angle=pos.angle+(2*PI);}
 
     temps_prec=temps;
     encoder_prec1=ENCODER_Read(0);
     encoder_prec2=ENCODER_Read(1);
-    Serial.println(pos.x);
-    Serial.println(pos.y);
+    //Serial.println(pos.x);
+    //Serial.println(pos.y);
     }
 }
 
@@ -157,15 +163,15 @@ void algoGarfield(){
  float diffY=positionYRecu-positionY;                  //Définit les différences de positions
 
  float anglePoursuite=atan2(diffY,diffX);
-Serial.println("Angle de poursuite");
-Serial.println(anglePoursuite);
+//Serial.println("Angle de poursuite");
+//Serial.println(anglePoursuite);
 
 
 float changementAngle=(robot.angle+(PI/2))-anglePoursuite;  //Trouve combien il faut qu'il tourne
-Serial.println("Angle changment");
-Serial.println(changementAngle);
-Serial.println("Angle now");
-Serial.println(robot.angle+(PI/2));
+//Serial.println("Angle changment");
+//Serial.println(changementAngle);
+//Serial.println("Angle now");
+//Serial.println(robot.angle+(PI/2));
 if(changementAngle>180){changementAngle=((2*PI)-changementAngle)*-1;}// transforme angle>180 à angle négatif
 
  if(changementAngle<0){bool coteTourne=false;changementAngle=-changementAngle;}
@@ -186,12 +192,12 @@ if(!coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(0,0);
 if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
 void tournejusqua(float angle){
-  if(!((robot.angle+PI/2)<angle+PI/4 && ((robot.angle+PI/2)>angle-PI/4))){
-  if((robot.angle+PI/2)>angle+PI/4){
-    vitesseRoues(0.3,-0.3);
+  if(!((robot.angle+PI/2)<angle+PI/6 && ((robot.angle+PI/2)>angle-PI/6))){
+  if((robot.angle+PI/2)>angle+PI/6){
+    vitesseRoues(0.1,-0.1);
   }  
-  if((robot.angle+PI/2)<angle-PI/4){
-    vitesseRoues(-0.3,0.3);
+  if((robot.angle+PI/2)<angle-PI/6){
+    vitesseRoues(-0.1,0.1);
   }
  
 }else { 
@@ -209,7 +215,10 @@ float angledepoursuite(float positionXRecu, float positionYRecu, float positionX
 
 
   float anglePoursuite=atan2(diffY,diffX);
-  return anglePoursuite;
+
+
+
+   return anglePoursuite;
 }
 
 /*******************************************************************************************
@@ -220,7 +229,7 @@ float angledepoursuite(float positionXRecu, float positionYRecu, float positionX
  ******************************************************************************************/
 void initUART1(void)
 {
-    Serial1.begin(115200);
+    Serial2.begin(115200);
 }
 
 /*******************************************************************************************
@@ -236,13 +245,17 @@ void litUART(uint8_t *trame, uint8_t sizeTrame)
     int somme = 0;
     uint8_t temporaire[sizeTrame - 1];
     int i;
-
-    if (Serial1.available() >= sizeTrame)
+    if (Serial2.available() >= sizeTrame)
     {
-        Serial1.readBytes(temporaire, 1);
+        Serial2.readBytes(temporaire, 1);
         if (temporaire[0] == 0x24)
         {
-            Serial1.readBytes(temporaire, sizeTrame - 1);
+            Serial2.readBytes(temporaire, sizeTrame - 1);
+            Serial.print(temporaire[0]);
+            Serial.print(temporaire[1]);
+            Serial.print(temporaire[2]);
+            Serial.println(temporaire[3]);
+
             for (i = 0; i < sizeTrame - 2; i++)
             {
                 somme = somme + temporaire[i];
@@ -268,13 +281,13 @@ void litUART(uint8_t *trame, uint8_t sizeTrame)
 void envoieTrame(uint8_t *trame)
 {
     uint8_t somme;
-    for(unsigned int i = 0; i < (sizeof(trame)); i++)
+    for(unsigned int i = 0; i < (sizeof(*trame)); i++)
     {
         somme = somme + trame[i];
     }
-    Serial1.write(0x24);
-    Serial1.write(trame, sizeof(trame));
-    Serial1.write(somme);
+    Serial2.write(0x24);
+    Serial2.write(trame, sizeof(*trame));
+    Serial2.write(somme);
 }
 
 /*******************************************************************************************
@@ -288,10 +301,8 @@ void envoieTrame(uint8_t *trame)
  * 3=Terminé car deux bumper ON
 ******************************************************************************************/
 void setEtatJeu(){
-if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==0 && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
-if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==0){etatJeu=1;}
-if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==1){etatJeu=2;}
-if((positionXRecu!=0 || positionYRecu!=0) && flagBumper==1 && etatJeuRecu==2){etatJeu=3;}
+if((etatJeuRecu==1) && flagBumper==0 && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
+if(etatJeuRecu==2 || etatJeuRecu==3){etatJeu=3;}
 if(millis()-debutJeu>60000){etatJeu=3;}
 }
 
@@ -321,8 +332,8 @@ void creationListe(){
  * 
 ******************************************************************************************/
 void receptionListe(){
-positionXRecu=listeLasagne[0];
-positionYRecu=listeLasagne[1];
+positionXRecu=(listeLasagne[0]);
+(positionYRecu)=(1*listeLasagne[1]);
 flagBleuRecu=listeLasagne[2];
 etatJeuRecu=listeLasagne[3];
 positionX=robot.x;
@@ -391,7 +402,7 @@ void bananeJaune()
 
   couleur = detectCouleur();
   clockN = millis();
-  Serial.print(couleur);
+  //Serial.print(couleur);
 
   if (couleur == COULEURJAUNE & (clockN - clockJ > 7000 || clockJ == 0))
   { // Cooldown
@@ -399,8 +410,8 @@ void bananeJaune()
     while (flagJaune == 1)
     {
       digitalWrite(LED_JAUNE, LOW);
-      tourne(758, 0.4, DROITE);
-
+      while(robot.angle-angleInitial<(2*PI)){actu_angle;vitesseRoues(0.2,-0.2);}
+      vitesseRoues(0,0);
       digitalWrite(LED_JAUNE, HIGH);
       flagJaune = 0;
       clockJ = millis();
@@ -435,7 +446,7 @@ void gelBleu()
     flagBleu = 1;
     clockB = millis();
   }
-  if (flagBleuRecu==1){digitalWrite(LED_BLEUE,LOW);vitesseRoues(0,0);(5000);vitesseRoues(vMax,vMax);(LED_BLEUE,HIGH);}
+  if (flagBleuRecu==1&&millis()-tempsBleu>10000){digitalWrite(LED_BLEUE,LOW);vitesseRoues(0,0);delay(5000);(LED_BLEUE,HIGH);tempsBleu=millis();}
 }
 
 /*******************************************************************************************
@@ -465,7 +476,7 @@ void delBonus()
   {
     digitalWrite(LED_VERTE, HIGH);
   }
-  if(etatJeu==3){digitalWrite(LED_BLEUE,LOW);digitalWrite(LED_ROUGE,LOW);digitalWrite(LED_VERTE,LOW);digitalWrite(LED_JAUNE,LOW);while(true){delay(10);}}
+  if(etatJeu==3){digitalWrite(LED_BLEUE,LOW);digitalWrite(LED_ROUGE,LOW);digitalWrite(LED_VERTE,LOW);digitalWrite(LED_JAUNE,LOW);while(true){vitesseRoues(0,0);(10);}}
 }
 
 
@@ -480,9 +491,9 @@ void delBonus()
     if(flagBumper==1&&millis()-tempsBumpp<5000){flagBumper=1;}
     if(flagBumper==0 || millis()-tempsBumpp>5000){bool bumpp=false;
     if(ROBUS_IsBumper(0)){bumpp=true;}
-  if(ROBUS_IsBumper(1)){bumpp=true;}
-  if(ROBUS_IsBumper(2)){bumpp=true;}
-  if(ROBUS_IsBumper(3)){bumpp=true;}
+    if(ROBUS_IsBumper(1)){bumpp=true;}
+    if(ROBUS_IsBumper(2)){bumpp=true;}
+    if(ROBUS_IsBumper(3)){bumpp=true;}
     if(bumpp){flagBumper=1;float tempsBumpp=millis();}
     if(!bumpp){flagBumper=0;}
 }}
@@ -510,9 +521,11 @@ Fonctions de boucle infini (loop())
 float anglePoursuite=0;
 void loop()
 {
-  anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
+  while(1)
+  {
+ if(!etatJeu==0){ anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
   tournejusqua(anglePoursuite);   //Problématique car loop trop longue donc passe trop de temps à tourner et overshoot
-  actu_angle(robot); 
+  actu_angle(robot); }
   // Serial.println("angle robot");
   // Serial.println(robot.angle);
   // Serial.println("angle poursuite");
@@ -524,11 +537,11 @@ void loop()
 
 litUART(listeLasagne,6);
 
-anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
+if(!etatJeu==0){angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
   tournejusqua(anglePoursuite);   //Problématique car loop trop longue donc passe trop de temps à tourner et overshoot
-  actu_angle(robot); 
+  actu_angle(robot); }
 
-// receptionListe();
+receptionListe();
 flagBumperSet();
 malusRouge();
 bonusVert();      
@@ -538,8 +551,15 @@ setEtatJeu(); //Doit etre avant delbonus()
 delBonus();
 creationListe();
 envoieTrame(listeGarfield);
+// Serial.println("positionXRecu");
+// Serial.println(positionXRecu);
+// Serial.println("positionYRecu");
+// Serial.println(positionYRecu);
 
-
-
+// Serial.println("positionX");
+// Serial.println(positionX);
+// Serial.println("positionY");
+// Serial.println(positionY);
+  }
 }
 
