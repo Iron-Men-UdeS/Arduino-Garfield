@@ -15,7 +15,7 @@ Inclure les librairies de functions que vous voulez utiliser
 /* ****************************************************************************
 Fonctions d'initialisation (setup)
 **************************************************************************** */
-#define vMaxNormal 0.3
+#define vMaxNormal 0.5
 #define vMaxVert 0.7
 #define vMaxRouge 0.3
 #define DIST 18.75
@@ -55,8 +55,8 @@ double positionX=0;
 double positionY=0;
 
 //Les recu par comm
-int positionXRecu=50;
-int positionYRecu=50;
+int positionXRecu=-45;
+int positionYRecu=90;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
@@ -186,15 +186,20 @@ if(!coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(0,0);
 if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
 void tournejusqua(float angle){
-  if(!((robot.angle+PI/2)<angle+PI/8 && ((robot.angle+PI/2)>angle-PI/8))){
-  if((robot.angle+PI/2)>angle+PI/8){
+  if(!((robot.angle+PI/2)<angle+PI/4 && ((robot.angle+PI/2)>angle-PI/4))){
+  if((robot.angle+PI/2)>angle+PI/4){
     vitesseRoues(0.3,-0.3);
   }  
-  if((robot.angle+PI/2)<angle-PI/8){
+  if((robot.angle+PI/2)<angle-PI/4){
     vitesseRoues(-0.3,0.3);
   }
  
-}else {vitesseRoues(vMaxNormal, vMaxNormal);}
+}else { 
+float vMax=0;
+if(flagVert==flagRouge){ vMax=vMaxNormal;}
+ if(flagVert==1 && flagRouge==0){ vMax=vMaxVert;}
+ if(flagVert==0 && flagRouge==1){ vMax=vMaxRouge;} 
+ vitesseRoues(vMax, vMax);}
 }
 float angledepoursuite(float positionXRecu, float positionYRecu, float positionX, float positionY){
     
@@ -507,28 +512,35 @@ float anglePoursuite=0;
 void loop()
 {
   anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
-  tournejusqua(anglePoursuite);
+  tournejusqua(anglePoursuite);   //Problématique car loop trop longue donc passe trop de temps à tourner et overshoot
   actu_angle(robot); 
-  Serial.println("angle robot");
-  Serial.println(robot.angle);
-  Serial.println("angle poursuite");
-  Serial.println(anglePoursuite);
-  Serial.println("positionX");
-  Serial.println(positionX);
-  Serial.println("positionY");
-  Serial.println(positionY);
+  // Serial.println("angle robot");
+  // Serial.println(robot.angle);
+  // Serial.println("angle poursuite");
+  // Serial.println(anglePoursuite);
+  // Serial.println("positionX");
+  // Serial.println(positionX);
+  // Serial.println("positionY");
+  // Serial.println(positionY);
 
-// litUART(listeLasagne,6);
+litUART(listeLasagne,6);
+
+anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
+  tournejusqua(anglePoursuite);   //Problématique car loop trop longue donc passe trop de temps à tourner et overshoot
+  actu_angle(robot); 
+
 // receptionListe();
-// flagBumperSet();
-// malusRouge();
-// bonusVert();
-// gelBleu();
-// bananeJaune();
-// setEtatJeu(); //Doit etre avant delbonus()
-// delBonus();
-// creationListe();
-// envoieTrame(listeGarfield);
-//if(millis()-lastTime>2000|| lastTime==0){algoGarfield();lastTime=millis();}
+flagBumperSet();
+malusRouge();
+bonusVert();      
+gelBleu();
+bananeJaune();
+setEtatJeu(); //Doit etre avant delbonus()
+delBonus();
+creationListe();
+envoieTrame(listeGarfield);
+
+
+
 }
 
