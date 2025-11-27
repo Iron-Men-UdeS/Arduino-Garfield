@@ -400,7 +400,7 @@ void bananeJaune()
     while (flagJaune == 1)
     {
       digitalWrite(LED_JAUNE, LOW);
-      tourne(762, 0.4, DROITE);
+      tourne(758, 0.4, DROITE);
 
       digitalWrite(LED_JAUNE, HIGH);
       flagJaune = 0;
