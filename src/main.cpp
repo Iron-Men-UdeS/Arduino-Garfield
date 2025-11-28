@@ -301,7 +301,7 @@ void envoieTrame(uint8_t *trame)
  * 3=Terminé car deux bumper ON
 ******************************************************************************************/
 void setEtatJeu(){
-if((etatJeuRecu==1) && flagBumper==0 && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
+if((etatJeuRecu==1) && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
 if(etatJeuRecu==2 || etatJeuRecu==3){etatJeu=3;}
 if(millis()-debutJeu>60000){etatJeu=3;}
 }
@@ -410,7 +410,8 @@ void bananeJaune()
     while (flagJaune == 1)
     {
       digitalWrite(LED_JAUNE, LOW);
-      while(robot.angle-angleInitial<(2*PI)){actu_angle;vitesseRoues(0.2,-0.2);}
+      vitesseRoues(0.3,-0.3);
+      delay(5000);
       vitesseRoues(0,0);
       digitalWrite(LED_JAUNE, HIGH);
       flagJaune = 0;
