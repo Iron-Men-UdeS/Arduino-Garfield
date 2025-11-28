@@ -58,8 +58,8 @@ double positionY=0;
 float tempsBleu=-10000;
 
 //Les recu par comm
-int positionXRecu=-0;
-int positionYRecu=0;
+int positionXRecu=50;
+int positionYRecu=50;
 int flagBleuRecu=0;
 int etatJeuRecu=0;
 
@@ -191,20 +191,26 @@ if(!coteTourne){if(abs(robot.angle-anglePoursuite)>(PI/16)){MOTOR_SetSpeed(0,0);
 
 if(flagBumper==1){MOTOR_SetSpeed(0,-vMaxRouge);MOTOR_SetSpeed(1,-vMaxRouge);}
 }
+
+int k=0;
+float vVitesse=0;
 void tournejusqua(float angle){
   if(!((robot.angle+PI/2)<angle+PI/6 && ((robot.angle+PI/2)>angle-PI/6))){
   if((robot.angle+PI/2)>angle+PI/6){
-    vitesseRoues(0.1,-0.1);
+    vitesseRoues(0.1,-0.1);vVitesse=0;
   }  
   if((robot.angle+PI/2)<angle-PI/6){
-    vitesseRoues(-0.1,0.1);
+    vitesseRoues(-0.1,0.1);vVitesse=0;
   }
  
 }else { 
-if(flagVert==flagRouge){ vMax=vMaxNormal;}
- if(flagVert==1 && flagRouge==0){ vMax=vMaxVert;}
- if(flagVert==0 && flagRouge==1){ vMax=vMaxRouge;} 
- vitesseRoues(vMax, vMax);}
+if(flagVert==flagRouge){ vMax=(vMaxNormal/2);}
+ if(flagVert==1 && flagRouge==0){ vMax=(vMaxVert/2);}
+ if(flagVert==0 && flagRouge==1){ vMax=(vMaxRouge/2);} 
+
+vVitesse=vVitesse+((vMax-vVitesse)*0.4);
+
+ vitesseRoues(vVitesse, vVitesse);}
 }
 float angledepoursuite(float positionXRecu, float positionYRecu, float positionX, float positionY){
     
@@ -212,7 +218,7 @@ float angledepoursuite(float positionXRecu, float positionYRecu, float positionX
   float diffX=positionXRecu-positionX;
   float diffY=positionYRecu-positionY;                  //Définit les différences de positions
 
-
+ //if(k==0){diffX=100;diffY=100;k=1;}
 
   float anglePoursuite=atan2(diffY,diffX);
 
@@ -303,7 +309,7 @@ void envoieTrame(uint8_t *trame)
 void setEtatJeu(){
 if((etatJeuRecu==1) && debutJeu==0 ){etatJeu=1; debutJeu=millis();}
 if(etatJeuRecu==2 || etatJeuRecu==3){etatJeu=3;}
-if(millis()-debutJeu>60000){etatJeu=3;}
+if(millis()-debutJeu>30000){etatJeu=3;}
 }
 
 /*******************************************************************************************
@@ -332,8 +338,20 @@ void creationListe(){
  * 
 ******************************************************************************************/
 void receptionListe(){
+
+//if(positionXRecu<40 && positionYRecu<40){positionXRecu=positionXRecu+130;
+//positionYRecu=positionYRecu+130;}
+
+//if(positionYRecu>129 && positionXRecu>129){positionYRecu=positionYRecu-120;}
+
+//if(positionYRecu<55 && positionXRecu>100){positionXRecu=positionXRecu-120; positionYRecu=positionYRecu+120;}
+
+//if(positionYRecu>130 && positionXRecu<30){positionYRecu=positionYRecu-120;}
+
+
+
 positionXRecu=(listeLasagne[0]);
-(positionYRecu)=(1*listeLasagne[1]);
+positionYRecu=(1*listeLasagne[1]);
 flagBleuRecu=listeLasagne[2];
 etatJeuRecu=listeLasagne[3];
 positionX=robot.x;
@@ -524,6 +542,7 @@ void loop()
 {
   while(1)
   {
+  
  if(!etatJeu==0){ anglePoursuite= angledepoursuite(positionXRecu, positionYRecu, positionX, positionY);
   tournejusqua(anglePoursuite);   //Problématique car loop trop longue donc passe trop de temps à tourner et overshoot
   actu_angle(robot); }
@@ -546,7 +565,7 @@ receptionListe();
 flagBumperSet();
 malusRouge();
 bonusVert();      
-gelBleu();
+//gelBleu();
 bananeJaune();
 setEtatJeu(); //Doit etre avant delbonus()
 delBonus();

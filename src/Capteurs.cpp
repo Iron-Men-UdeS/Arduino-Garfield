@@ -199,10 +199,10 @@ int detectCouleur(void)
 
    // tcs.setInterrupt(true);  // turn off LED
 
-   // Serial.print("C:\t"); Serial.print(clear);
-   // Serial.print("\tR:\t"); Serial.print(red);
-    //Serial.print("\tG:\t"); Serial.print(green);
-    //Serial.print("\tB:\t"); Serial.print(blue);
+  //  Serial.print("C:\t"); Serial.print(clear);
+  //  Serial.print("\tR:\t"); Serial.print(red);
+  //   Serial.print("\tG:\t"); Serial.print(green);
+  //   Serial.print("\tB:\t"); Serial.print(blue);
    // Serial.println();
 
     // Figure out some basic hex code for visualization
